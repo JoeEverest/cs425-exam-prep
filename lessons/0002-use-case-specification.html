@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 2 · Write a Use-Case Specification</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@600;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: oklch(96.5% 0.013 92);
+    --panel: oklch(98.4% 0.008 95);
+    --ink: oklch(28% 0.02 75);
+    --ink-soft: oklch(45% 0.02 75);
+    --pen: oklch(43% 0.11 262);
+    --pen-soft: oklch(43% 0.11 262 / 0.12);
+    --pencil: oklch(60% 0.015 75);
+    --red: oklch(49% 0.16 27);
+    --red-soft: oklch(49% 0.16 27 / 0.08);
+    --ok: oklch(50% 0.1 150);
+    --ok-soft: oklch(50% 0.1 150 / 0.1);
+    --rule: oklch(88% 0.018 250);
+    --space-xs: 4px; --space-sm: 8px; --space-md: 16px;
+    --space-lg: 32px; --space-xl: 56px; --space-2xl: 96px;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Atkinson Hyperlegible", Verdana, sans-serif;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+  }
+  .sheet { max-width: 880px; margin: 0 auto; padding: var(--space-lg) var(--space-md) var(--space-2xl); }
+  h1, h2, h3 { font-family: Besley, Georgia, serif; line-height: 1.15; }
+  h1 { font-size: clamp(2rem, 5vw, 2.9rem); font-weight: 800; }
+  h2 { font-size: 1.55rem; font-weight: 700; margin-top: var(--space-xl); }
+  h3 { font-size: 1.15rem; font-weight: 700; margin-top: var(--space-lg); }
+  p, ul, ol { margin-top: var(--space-md); max-width: 68ch; }
+  li + li { margin-top: var(--space-xs); }
+  a { color: var(--pen); }
+  code { font-family: inherit; font-weight: 700; }
+  .hand { font-family: Kalam, "Comic Sans MS", cursive; color: var(--pen); }
+
+  header.lesson-head { padding-top: var(--space-md); }
+  .breadcrumb { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+  .lesson-meta { margin-top: var(--space-sm); color: var(--ink-soft); font-size: 0.95rem; }
+  .headrule { border: 0; border-top: 2px solid var(--ink); margin-top: var(--space-md); }
+  .headrule + .headrule { border-top-width: 1px; margin-top: 3px; }
+
+  .mission-note { margin-top: var(--space-lg); background: var(--pen-soft); padding: var(--space-md) var(--space-lg); max-width: none; }
+  .mission-note p { margin-top: var(--space-xs); }
+
+  .grid-panel {
+    margin-top: var(--space-md);
+    background:
+      repeating-linear-gradient(to right, var(--rule) 0 1px, transparent 1px 24px),
+      repeating-linear-gradient(to bottom, var(--rule) 0 1px, transparent 1px 24px),
+      var(--panel);
+    border: 1px solid var(--rule);
+    padding: var(--space-md);
+    overflow-x: auto;
+  }
+  .grid-panel .mermaid { display: flex; justify-content: center; }
+
+  .step { display: grid; grid-template-columns: 72px 1fr; gap: 0 var(--space-md); margin-top: var(--space-xl); }
+  .step-num { font-family: Besley, Georgia, serif; font-weight: 800; font-size: 3rem; color: var(--pencil); line-height: 1; }
+  .step h3 { margin-top: 0; }
+  .step .grid-panel, .step p, .step ul, .step .spec { grid-column: 2; }
+  .step > p { margin-top: var(--space-sm); }
+  .margin-note { font-family: Kalam, cursive; color: var(--pen); font-size: 1rem; margin-top: var(--space-sm); }
+
+  /* The spec sheet — looks like a ruled exam answer */
+  .spec {
+    margin-top: var(--space-md); background: var(--panel); border: 1px solid var(--rule);
+    padding: var(--space-md) var(--space-lg); font-size: 0.98rem; max-width: none;
+  }
+  .spec dt { font-weight: 700; font-family: Besley, Georgia, serif; margin-top: var(--space-sm); }
+  .spec dd { margin-left: 0; }
+  .spec ol { margin-top: var(--space-xs); padding-left: 1.4em; }
+  .spec .br { color: var(--pen); font-weight: 700; }
+  .spec .flowlabel { font-weight: 700; }
+
+  table { border-collapse: collapse; margin-top: var(--space-md); width: 100%; }
+  th, td { border: 1px solid var(--rule); padding: var(--space-sm) var(--space-md); text-align: left; vertical-align: top; }
+  th { font-family: Besley, Georgia, serif; font-size: 0.95rem; background: var(--panel); }
+
+  .warn { margin-top: var(--space-lg); background: var(--red-soft); padding: var(--space-md) var(--space-lg); max-width: none; }
+  .warn h3 { color: var(--red); margin-top: 0; }
+  .warn strong { color: var(--red); }
+
+  .quiz-q { margin-top: var(--space-lg); }
+  .quiz-q p.q { font-weight: 700; }
+  .quiz-opts { display: flex; flex-direction: column; gap: var(--space-sm); margin-top: var(--space-sm); max-width: 60ch; }
+  .quiz-opts button {
+    font: inherit; text-align: left; cursor: pointer;
+    background: var(--panel); color: var(--ink);
+    border: 1px solid var(--pencil); padding: var(--space-sm) var(--space-md);
+  }
+  .quiz-opts button:hover { border-color: var(--pen); }
+  .quiz-opts button.correct { background: var(--ok-soft); border-color: var(--ok); }
+  .quiz-opts button.wrong { background: var(--red-soft); border-color: var(--red); }
+  .quiz-why { display: none; margin-top: var(--space-sm); font-size: 0.98rem; color: var(--ink-soft); max-width: 60ch; }
+  .quiz-q.answered .quiz-why { display: block; }
+
+  details { margin-top: var(--space-lg); }
+  summary { cursor: pointer; font-family: Besley, Georgia, serif; font-weight: 700; font-size: 1.1rem; color: var(--pen); }
+  .checklist { list-style: none; padding-left: 0; }
+  .checklist li::before { content: "☐ "; color: var(--pen); }
+
+  footer { margin-top: var(--space-2xl); border-top: 2px solid var(--ink); padding-top: var(--space-md); color: var(--ink-soft); font-size: 0.95rem; }
+
+  @media print {
+    body { background: white; font-size: 10.5pt; }
+    .sheet { max-width: none; padding: 0; }
+    .step, .grid-panel, .quiz-q, table, .spec { break-inside: avoid; }
+    a { color: var(--ink); text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<header class="lesson-head">
+  <p class="breadcrumb">CS425 · Part A · Lesson 2 of 8</p>
+  <h1>Write a Use-Case Specification</h1>
+  <p class="lesson-meta">≈ 25 minutes · pen and paper required at the end ·
+    <a href="../reference/part-a-cheatsheet.html">cheat sheet</a> ·
+    <a href="0001-use-case-diagram.html">← Lesson 1</a></p>
+  <hr class="headrule"><hr class="headrule">
+</header>
+
+<div class="mission-note">
+  <p><strong>Why this lesson.</strong> The specification is the script for everything
+  that follows. In Lesson 4, each numbered step becomes a message in the sequence
+  diagram. If a step is missing here, the consistency check fails there.</p>
+</div>
+
+<h2>What the exam asks</h2>
+<ul>
+  <li>Write a complete specification: name, goal, primary actor, preconditions,
+      postconditions, trigger, main flow, alternative flows, exceptional flows.</li>
+  <li>Recognize business rules and validation requirements inside the flows.</li>
+  <li>Separate <em>what</em> the system must do from <em>how</em> the software will implement it.</li>
+</ul>
+
+<h2>Three distinctions that carry the marks</h2>
+<table>
+  <tr><th>Distinction</th><th>Test question</th><th>Example</th></tr>
+  <tr>
+    <td><strong>Precondition vs. trigger</strong></td>
+    <td>Is it a <em>state</em> that must already be true, or the <em>event</em> that starts the use case?</td>
+    <td>"Student is authenticated" = precondition. "Student submits an enrollment request" = trigger.</td>
+  </tr>
+  <tr>
+    <td><strong>Alternative vs. exceptional flow</strong></td>
+    <td>Does the path still reach an <em>acceptable outcome</em>, or does the goal <em>fail</em>?</td>
+    <td>Course full → waitlist = alternative. Prerequisites not met → rejection = exceptional.</td>
+  </tr>
+  <tr>
+    <td><strong>What vs. how</strong></td>
+    <td>Would the sentence still be true with a different technology?</td>
+    <td>"System records the enrollment" = what ✓. "System inserts a row into the enrollments table" = how ✗.</td>
+  </tr>
+</table>
+<p class="margin-note">A business rule is a policy that exists without the software:
+"a student cannot enroll without the prerequisites." Name it (BR-1) and cite it in
+the step that checks it.</p>
+
+<h2>Build one in six moves</h2>
+<p>Same scenario as Lesson 1: <strong>Enroll in Course</strong> in the Course
+Registration System. Watch the specification grow, section by section.</p>
+
+<section class="step">
+  <div class="step-num">1</div>
+  <div>
+    <h3>Frame it: name, goal, primary actor</h3>
+    <p>Copy the name from the oval in your use-case diagram — the two artifacts must
+    match, word for word. The goal is the outcome, written from the actor's view.</p>
+  </div>
+  <dl class="spec">
+    <dt>Name</dt><dd>Enroll in Course</dd>
+    <dt>Goal</dt><dd>The student is enrolled in a course section.</dd>
+    <dt>Primary actor</dt><dd>Student</dd>
+  </dl>
+</section>
+
+<section class="step">
+  <div class="step-num">2</div>
+  <div>
+    <h3>Bound it: preconditions, trigger, postconditions</h3>
+    <p>Preconditions are states that hold before the use case starts. The trigger is
+    the single event that starts it. Postconditions must cover <em>every</em> ending —
+    success, alternative, and failure.</p>
+  </div>
+  <dl class="spec">
+    <dt>Preconditions</dt><dd>The student is authenticated. The course catalog is published.</dd>
+    <dt>Trigger</dt><dd>The student submits an enrollment request for a selected course.</dd>
+    <dt>Postconditions</dt><dd>Success: an enrollment record exists. Alternative: the
+    student is on the waitlist. Failure: no enrollment exists and the student saw the reason.</dd>
+  </dl>
+</section>
+
+<section class="step">
+  <div class="step-num">3</div>
+  <div>
+    <h3>Write the main flow — the happy path only</h3>
+    <p>Number every step. Alternate between "the actor does X" and "the system does Y".
+    No conditions, no failures, no technology. Save the branches for moves 4 and 5.</p>
+    <p class="margin-note">Each step here becomes a message in Lesson 4. Write steps
+    you would want to draw.</p>
+  </div>
+  <dl class="spec">
+    <dt>Main flow</dt>
+    <dd><ol>
+      <li>The student selects a course from the catalog.</li>
+      <li>The system verifies the prerequisites <span class="br">[BR-1]</span>.</li>
+      <li>The system checks seat availability.</li>
+      <li>The system records the enrollment.</li>
+      <li>The system confirms the enrollment and shows the section details.</li>
+    </ol></dd>
+  </dl>
+</section>
+
+<section class="step">
+  <div class="step-num">4</div>
+  <div>
+    <h3>Add alternative flows — other roads to an acceptable end</h3>
+    <p>Attach each one to the step where it branches: step 3 gets flow 3a. Number the
+    sub-steps 3a1, 3a2. State where the flow ends or rejoins.</p>
+    <p class="margin-note">3a is the «extend» from your diagram — Join Waitlist. The
+    two artifacts tell one story.</p>
+  </div>
+  <dl class="spec">
+    <dt>Alternative flows</dt>
+    <dd><p><span class="flowlabel">3a. The course is full.</span></p><ol>
+      <li>3a1. The system offers a place on the waitlist.</li>
+      <li>3a2. The student accepts. The system records the waitlist entry. The use case ends.</li>
+    </ol></dd>
+  </dl>
+</section>
+
+<section class="step">
+  <div class="step-num">5</div>
+  <div>
+    <h3>Add exceptional flows — the failures</h3>
+    <p>Same numbering style. An exceptional flow ends without the goal. Always say what
+    the system tells the actor.</p>
+  </div>
+  <dl class="spec">
+    <dt>Exceptional flows</dt>
+    <dd><p><span class="flowlabel">2a. The prerequisites are not met.</span></p><ol>
+      <li>2a1. The system rejects the request and shows the missing prerequisite <span class="br">[BR-1]</span>. The use case ends.</li>
+    </ol></dd>
+  </dl>
+  <div class="grid-panel">
+<pre class="mermaid">
+flowchart TD
+  s1["1 · Student selects a course"] --> s2["2 · System verifies prerequisites (BR-1)"]
+  s2 -->|met| s3["3 · System checks seat availability"]
+  s2 -.->|"2a · not met"| x1(["Rejected — exceptional end"]):::bad
+  s3 -->|seats free| s4["4 · System records the enrollment"]
+  s3 -.->|"3a · course full"| a1["3a1 · System offers the waitlist"]
+  a1 --> a2(["Waitlisted — alternative end"]):::alt
+  s4 --> s5["5 · System confirms"]
+  s5 --> ok(["Enrolled — success end"]):::good
+  classDef good stroke-width:2px;
+  classDef alt stroke-dasharray:4 3;
+  classDef bad stroke-dasharray:2 3;
+</pre>
+  </div>
+  <p>One story, three endings — and every ending already appears in your
+  postconditions from move 2.</p>
+</section>
+
+<section class="step">
+  <div class="step-num">6</div>
+  <div>
+    <h3>Extract the business rules, delete the "how"</h3>
+    <p>Read your flow again. Pull each policy out into a named rule. Then hunt for
+    technology words — table, database, button, JSON, API — and delete them.</p>
+  </div>
+  <dl class="spec">
+    <dt>Business rules</dt>
+    <dd>
+      <p><span class="br">BR-1</span> — A student cannot enroll in a course when its prerequisites are not met.</p>
+      <p><span class="br">BR-2</span> — An enrollment is only possible while the course has free seats; otherwise only the waitlist is offered.</p>
+    </dd>
+  </dl>
+</section>
+
+<div class="warn">
+  <h3>Red-pen list: how students lose marks here</h3>
+  <ul>
+    <li><strong>Happy path polluted.</strong> "2. The system verifies prerequisites, and if they are not met it rejects…" — the branch belongs in 2a, not in step 2.</li>
+    <li><strong>Failure filed as alternative.</strong> A rejection is exceptional. Only an acceptable outcome (waitlist) is alternative.</li>
+    <li><strong>Trigger written as a precondition.</strong> "The student wants to enroll" is not a state; the submitted request is the trigger.</li>
+    <li><strong>Implementation talk.</strong> Tables, SQL, screens, and buttons do not belong in a specification.</li>
+    <li><strong>Postconditions for success only.</strong> Cover the waitlist and the rejection endings too.</li>
+    <li><strong>Name mismatch.</strong> The spec name must equal the oval's name in the diagram.</li>
+  </ul>
+</div>
+
+<h2>Quick check</h2>
+
+<div class="quiz-q">
+  <p class="q">1 · "The member holds a valid membership card." Which section?</p>
+  <div class="quiz-opts">
+    <button>Trigger</button>
+    <button data-ok="1">Precondition</button>
+    <button>Main flow, step 1</button>
+  </div>
+  <p class="quiz-why">It is a state that must already be true before the use case starts — a precondition. The trigger is the event that starts the action.</p>
+</div>
+
+<div class="quiz-q">
+  <p class="q">2 · "When the course is full, the student can join the waitlist." Which flow type?</p>
+  <div class="quiz-opts">
+    <button data-ok="1">Alternative flow — the path still ends in an acceptable outcome</button>
+    <button>Exceptional flow — the enrollment failed</button>
+    <button>Part of the main flow</button>
+  </div>
+  <p class="quiz-why">The waitlist is a defined, acceptable outcome, so this is an alternative flow. Compare: "prerequisites not met → reject" fails the goal, so it is exceptional.</p>
+</div>
+
+<div class="quiz-q">
+  <p class="q">3 · Which sentence does <em>not</em> belong in a use-case specification?</p>
+  <div class="quiz-opts">
+    <button>The system records the enrollment.</button>
+    <button data-ok="1">The system inserts the enrollment into the ENROLLMENTS table with a foreign key to STUDENTS.</button>
+    <button>The system shows the missing prerequisite to the student.</button>
+  </div>
+  <p class="quiz-why">Tables and foreign keys are "how". The specification stays true under any technology — that is the what/how test.</p>
+</div>
+
+<div class="quiz-q">
+  <p class="q">4 · "A member can hold at most 5 loans at the same time." What is this?</p>
+  <div class="quiz-opts">
+    <button>An exceptional flow</button>
+    <button>A precondition</button>
+    <button data-ok="1">A business rule — name it BR-n and cite it in the step that checks it</button>
+  </div>
+  <p class="quiz-why">It is a policy that exists without the software. The flow then gets a step "the system checks the loan limit [BR-2]" plus an exceptional flow for the violation.</p>
+</div>
+
+<div class="quiz-q">
+  <p class="q">5 · Where does the flow "3a. The course is full" attach?</p>
+  <div class="quiz-opts">
+    <button data-ok="1">To main-flow step 3 — the step where the condition is detected</button>
+    <button>To the end of the main flow</button>
+    <button>Anywhere; the letter is decoration</button>
+  </div>
+  <p class="quiz-why">The number before the letter names the branching step. 3a branches at step 3; its own sub-steps are 3a1, 3a2.</p>
+</div>
+
+<h2>Now write on paper</h2>
+<p>Set a 8-minute timer. Write the full specification for <strong>Borrow Book</strong>,
+consistent with your Lesson 1 library diagram. Then grade yourself against the model.</p>
+<div class="mission-note">
+  <p><strong>Scenario.</strong> A member borrows books at a self-service kiosk. The
+  member scans the membership card, and the system always verifies the membership.
+  The member then scans a book, the system checks that the book can go on loan, records
+  the loan, and shows the due date. Library policy: only valid members can borrow
+  (BR-1); a member holds at most 5 loans at the same time (BR-2); the loan period is
+  21 days (BR-3). A member with several books repeats the scan for each book. An
+  expired membership or a reached loan limit stops the process.</p>
+</div>
+
+<details id="model-answer">
+  <summary>Open the model answer</summary>
+  <dl class="spec">
+    <dt>Name</dt><dd>Borrow Book</dd>
+    <dt>Goal</dt><dd>The member has borrowed the book; the loan is recorded with a due date.</dd>
+    <dt>Primary actor</dt><dd>Member</dd>
+    <dt>Preconditions</dt><dd>The member holds a membership card. The book carries a scannable label.</dd>
+    <dt>Trigger</dt><dd>The member scans the membership card at the kiosk.</dd>
+    <dt>Main flow</dt>
+    <dd><ol>
+      <li>The member scans the membership card.</li>
+      <li>The system verifies the membership <span class="br">[BR-1]</span>.</li>
+      <li>The member scans a book.</li>
+      <li>The system checks that the member can take another loan <span class="br">[BR-2]</span>.</li>
+      <li>The system records the loan and computes the due date <span class="br">[BR-3]</span>.</li>
+      <li>The system confirms the loan and shows the due date.</li>
+    </ol></dd>
+    <dt>Alternative flows</dt>
+    <dd><p><span class="flowlabel">6a. The member has more books.</span></p>
+    <ol><li>6a1. The flow continues at step 3 for the next book.</li></ol></dd>
+    <dt>Exceptional flows</dt>
+    <dd>
+      <p><span class="flowlabel">2a. The membership is invalid or expired.</span></p>
+      <ol><li>2a1. The system rejects the member and shows the reason <span class="br">[BR-1]</span>. The use case ends.</li></ol>
+      <p><span class="flowlabel">4a. The member reached the loan limit.</span></p>
+      <ol><li>4a1. The system refuses the loan and shows the limit <span class="br">[BR-2]</span>. The use case ends.</li></ol>
+    </dd>
+    <dt>Postconditions</dt><dd>Success: each scanned book has a recorded loan with a due
+    date. Failure: no new loan exists and the member saw the reason.</dd>
+    <dt>Business rules</dt>
+    <dd>
+      <p><span class="br">BR-1</span> — Only a valid, unexpired membership can borrow.</p>
+      <p><span class="br">BR-2</span> — A member holds at most 5 loans at the same time.</p>
+      <p><span class="br">BR-3</span> — The loan period is 21 days.</p>
+    </dd>
+  </dl>
+  <h3>Grade yourself</h3>
+  <ul class="checklist">
+    <li>Name equals the oval from Lesson 1: "Borrow Book".</li>
+    <li>All nine sections present, in order.</li>
+    <li>Main flow is a clean happy path — no "if" inside it.</li>
+    <li>Repeat-scan handled as an alternative flow that rejoins at step 3.</li>
+    <li>Both failures written as exceptional flows attached to steps 2 and 4.</li>
+    <li>Three business rules named BR-1..3 and cited in the steps that check them.</li>
+    <li>Postconditions cover success and failure.</li>
+    <li>Zero technology words (kiosk hardware is the actor's channel and is fine; tables and databases are not).</li>
+  </ul>
+  <p>Score 7–8: say "next" for Lesson 3. Score 5–6: rewrite the flows only. Score ≤ 4:
+  redo the six moves with the enrollment example beside you.</p>
+</details>
+
+<footer>
+  <p>Stuck? Ask your teacher in the Claude Code session — for example:
+  <span class="hand">"is a timeout an alternative or an exceptional flow?"</span></p>
+  <p>Next: <strong>Lesson 3 — analysis classes</strong>: turn this specification into
+  boundary, control, and entity classes for the use-case realization.
+  Reference: <a href="../reference/part-a-cheatsheet.html">Part A cheat sheet</a>.</p>
+</footer>
+
+</div>
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({
+    startOnLoad: true,
+    look: "handDrawn",
+    theme: "neutral",
+    themeVariables: {
+      fontFamily: "Kalam, cursive",
+      background: "transparent",
+      primaryColor: "#faf7ef",
+      primaryBorderColor: "#3a3630",
+      primaryTextColor: "#3a3630",
+      lineColor: "#3a4a7a",
+      clusterBkg: "transparent",
+      clusterBorder: "#3a3630"
+    }
+  });
+
+  document.querySelectorAll(".quiz-q").forEach(q => {
+    q.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (q.classList.contains("answered")) return;
+        q.classList.add("answered");
+        btn.classList.add(btn.dataset.ok ? "correct" : "wrong");
+        if (!btn.dataset.ok) q.querySelector("[data-ok]").classList.add("correct");
+      });
+    });
+  });
+</script>
+</body>
+</html>

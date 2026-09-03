@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS425 Part A · Diagram Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@600;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: oklch(96.5% 0.013 92);
+    --panel: oklch(98.4% 0.008 95);
+    --ink: oklch(28% 0.02 75);
+    --ink-soft: oklch(45% 0.02 75);
+    --pen: oklch(43% 0.11 262);
+    --pen-soft: oklch(43% 0.11 262 / 0.12);
+    --pencil: oklch(60% 0.015 75);
+    --rule: oklch(88% 0.018 250);
+    --space-xs: 4px; --space-sm: 8px; --space-md: 16px;
+    --space-lg: 32px; --space-xl: 56px; --space-2xl: 96px;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: "Atkinson Hyperlegible", Verdana, sans-serif;
+    font-size: 1.0625rem; line-height: 1.55;
+  }
+  .sheet { max-width: 780px; margin: 0 auto; padding: var(--space-xl) var(--space-md) var(--space-2xl); }
+  h1, h2 { font-family: Besley, Georgia, serif; line-height: 1.1; }
+  h1 { font-size: clamp(2.2rem, 6vw, 3.2rem); font-weight: 800; }
+  h2 { font-size: 1.4rem; margin-top: var(--space-xl); }
+  p { margin-top: var(--space-md); max-width: 62ch; }
+  a { color: var(--pen); }
+  .breadcrumb { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+  .headrule { border: 0; border-top: 2px solid var(--ink); margin-top: var(--space-md); }
+  .headrule + .headrule { border-top-width: 1px; margin-top: 3px; }
+  .hand { font-family: Kalam, cursive; color: var(--pen); }
+
+  ol.lessons { list-style: none; padding: 0; margin-top: var(--space-md); }
+  ol.lessons li {
+    display: grid; grid-template-columns: 64px 1fr; align-items: baseline;
+    gap: var(--space-md); padding: var(--space-md) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  ol.lessons .no { font-family: Besley, Georgia, serif; font-weight: 800; font-size: 1.6rem; color: var(--pencil); }
+  ol.lessons a { font-weight: 700; font-size: 1.15rem; text-decoration: none; }
+  ol.lessons a:hover { text-decoration: underline; }
+  ol.lessons .desc { display: block; color: var(--ink-soft); font-size: 0.95rem; margin-top: 2px; }
+  ol.lessons li.soon .title { font-weight: 700; font-size: 1.15rem; color: var(--pencil); }
+  ol.lessons li.soon .no { opacity: 0.5; }
+  .tag { font-family: Kalam, cursive; color: var(--pencil); font-size: 0.9rem; margin-left: var(--space-sm); }
+
+  .refbox { margin-top: var(--space-md); background: var(--pen-soft); padding: var(--space-md) var(--space-lg); }
+  footer { margin-top: var(--space-2xl); border-top: 2px solid var(--ink); padding-top: var(--space-md); color: var(--ink-soft); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<header>
+  <p class="breadcrumb">CS425 · Software Engineering · Final Exam</p>
+  <h1>Part A Diagram Prep</h1>
+  <p>Paper-based analysis and design, one drawing skill per lesson. One running
+  example — <strong>Enroll in Course</strong> — carries through every artifact, because
+  the exam grades cross-diagram consistency.</p>
+  <hr class="headrule"><hr class="headrule">
+</header>
+
+<h2>Lessons</h2>
+<ol class="lessons">
+  <li>
+    <span class="no">1</span>
+    <span><a href="lessons/0001-use-case-diagram.html">Draw a Use-Case Diagram</a>
+      <span class="desc">Actors, boundary, associations, «include» and «extend» — built in six moves, with a quiz and a paper task.</span></span>
+  </li>
+  <li>
+    <span class="no">2</span>
+    <span><a href="lessons/0002-use-case-specification.html">Write a Use-Case Specification</a>
+      <span class="desc">Flows, preconditions, triggers, business rules — and the three distinctions that carry the marks.</span></span>
+  </li>
+  <li class="soon">
+    <span class="no">3</span>
+    <span><span class="title">Analysis Classes</span><span class="tag">up next</span>
+      <span class="desc">Boundary, control, entity — the use-case realization.</span></span>
+  </li>
+  <li class="soon">
+    <span class="no">4</span>
+    <span><span class="title">Sequence Diagrams</span>
+      <span class="desc">Lifelines, activations, DAO participants, alt frames.</span></span>
+  </li>
+  <li class="soon">
+    <span class="no">5</span>
+    <span><span class="title">Collaboration Diagrams</span>
+      <span class="desc">Object links and nested message numbering.</span></span>
+  </li>
+  <li class="soon">
+    <span class="no">6</span>
+    <span><span class="title">VOPC Diagrams</span>
+      <span class="desc">Derive every operation from a message.</span></span>
+  </li>
+  <li class="soon">
+    <span class="no">7</span>
+    <span><span class="title">Subsystem Design</span>
+      <span class="desc">Façade, service, DAO, repository.</span></span>
+  </li>
+  <li class="soon">
+    <span class="no">8</span>
+    <span><span class="title">Timed Mock — Full Part A</span>
+      <span class="desc">One scenario, every artifact, 40 minutes.</span></span>
+  </li>
+</ol>
+
+<h2>Reference</h2>
+<div class="refbox">
+  <p><a href="reference/part-a-cheatsheet.html"><strong>Part A Cheat Sheet</strong></a> —
+  all six topics on one printable page, with the exam time budget and the
+  consistency check. <span class="hand">Print this one.</span></p>
+</div>
+
+<footer>
+  <p>Diagrams render with Mermaid in a hand-drawn style; an internet connection is
+  needed for fonts and Mermaid. Every lesson ends on paper — that is where the exam
+  happens.</p>
+</footer>
+
+</div>
+</body>
+</html>

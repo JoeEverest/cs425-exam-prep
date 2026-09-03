@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS425 Part A · Diagram Cheat Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@600;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: oklch(96.5% 0.013 92);
+    --panel: oklch(98.4% 0.008 95);
+    --ink: oklch(28% 0.02 75);
+    --ink-soft: oklch(45% 0.02 75);
+    --pen: oklch(43% 0.11 262);
+    --pen-soft: oklch(43% 0.11 262 / 0.12);
+    --pencil: oklch(60% 0.015 75);
+    --red: oklch(49% 0.16 27);
+    --red-soft: oklch(49% 0.16 27 / 0.08);
+    --rule: oklch(88% 0.018 250);
+    --space-xs: 4px; --space-sm: 8px; --space-md: 16px;
+    --space-lg: 32px; --space-xl: 56px;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: "Atkinson Hyperlegible", Verdana, sans-serif;
+    font-size: 1rem; line-height: 1.5;
+  }
+  .sheet { max-width: 920px; margin: 0 auto; padding: var(--space-lg) var(--space-md) var(--space-xl); }
+  h1, h2, h3 { font-family: Besley, Georgia, serif; line-height: 1.15; }
+  h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 800; }
+  h2 { font-size: 1.4rem; margin-top: var(--space-xl); }
+  h2 .no { color: var(--pencil); }
+  h3 { font-size: 1.05rem; margin-top: var(--space-lg); }
+  p, ul, ol { margin-top: var(--space-sm); max-width: 70ch; }
+  li + li { margin-top: 2px; }
+  a { color: var(--pen); }
+  code { font-family: inherit; font-weight: 700; }
+  .breadcrumb { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+  .headrule { border: 0; border-top: 2px solid var(--ink); margin-top: var(--space-md); }
+  .headrule + .headrule { border-top-width: 1px; margin-top: 3px; }
+  table { border-collapse: collapse; margin-top: var(--space-md); width: 100%; }
+  th, td { border: 1px solid var(--rule); padding: 6px 12px; text-align: left; vertical-align: top; }
+  th { font-family: Besley, Georgia, serif; font-size: 0.9rem; background: var(--panel); }
+  .grid-panel {
+    margin-top: var(--space-md);
+    background:
+      repeating-linear-gradient(to right, var(--rule) 0 1px, transparent 1px 24px),
+      repeating-linear-gradient(to bottom, var(--rule) 0 1px, transparent 1px 24px),
+      var(--panel);
+    border: 1px solid var(--rule);
+    padding: var(--space-md);
+    overflow-x: auto;
+  }
+  .grid-panel .mermaid { display: flex; justify-content: center; }
+  .hand { font-family: Kalam, cursive; color: var(--pen); }
+  .warn { margin-top: var(--space-md); background: var(--red-soft); padding: var(--space-sm) var(--space-md); max-width: none; }
+  .warn strong { color: var(--red); }
+  .keybox { margin-top: var(--space-md); background: var(--pen-soft); padding: var(--space-md) var(--space-lg); max-width: none; }
+  .template {
+    margin-top: var(--space-md); background: var(--panel); border: 1px solid var(--rule);
+    padding: var(--space-md) var(--space-lg); font-size: 0.95rem;
+  }
+  .template dt { font-weight: 700; margin-top: var(--space-sm); }
+  .template dd { margin-left: 0; color: var(--ink-soft); }
+  footer { margin-top: var(--space-xl); border-top: 2px solid var(--ink); padding-top: var(--space-md); color: var(--ink-soft); font-size: 0.95rem; }
+  @media print {
+    body { background: white; font-size: 9.5pt; }
+    .sheet { max-width: none; padding: 0; }
+    section, .grid-panel, table, .keybox, .warn { break-inside: avoid; }
+    a { color: var(--ink); text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<header>
+  <p class="breadcrumb">CS425 · Part A · Quick Reference</p>
+  <h1>Diagram Cheat Sheet</h1>
+  <p>One running example on every page of your exam prep: the
+  <strong>Course Registration System</strong> — <em>Enroll in Course</em>.
+  Print this sheet. Review it right before the paper.</p>
+  <hr class="headrule"><hr class="headrule">
+</header>
+
+<div class="keybox">
+  <p><strong>The professor's consistency check.</strong> The same scenario must tell the
+  same story in every artifact: use-case steps become interaction messages; those
+  messages become class operations and responsibilities; alternative flows must stay
+  visible and consistent.</p>
+  <p><strong>Time budget for Part A (30–45 min):</strong> use-case diagram ≈ 5 min ·
+  specification ≈ 8 min · sequence ≈ 10 min · collaboration ≈ 5 min · VOPC ≈ 8 min ·
+  subsystem answer ≈ 5 min.</p>
+</div>
+
+<section>
+<h2><span class="no">1 ·</span> Use-Case Diagram</h2>
+<ul>
+  <li>Actors (stick figures) always outside the boundary rectangle; use-case ovals inside.</li>
+  <li>Name use cases verb + noun. Associations are plain solid lines, no arrowheads.</li>
+  <li><code>«include»</code>: dashed arrow, <strong>base → included</strong>. Mandatory, always runs.</li>
+  <li><code>«extend»</code>: dashed arrow, <strong>extension → base</strong>. Optional; write the condition beside it.</li>
+  <li>External software (payment gateway, email service) is an actor.</li>
+</ul>
+<div class="grid-panel">
+<pre class="mermaid">
+flowchart LR
+  ST(["🧍 Student"]):::actor
+  subgraph SYS["Course Registration System"]
+    UC1(["Enroll in Course"])
+    UC4(["Verify Prerequisites"])
+    UC5(["Join Waitlist"])
+    UC1 -. "«include»" .-> UC4
+    UC5 -. "«extend» {course is full}" .-> UC1
+  end
+  ST --- UC1
+  classDef actor fill:none;
+</pre>
+</div>
+<div class="warn"><strong>Lose-marks list:</strong> reversed stereotype arrows · actors inside
+the box · noun-named ovals · ovals for button-level steps.</div>
+</section>
+
+<section>
+<h2><span class="no">2 ·</span> Use-Case Specification</h2>
+<p>Write these sections, in this order. Number the main flow. Letter the alternatives.</p>
+<dl class="template">
+  <dt>Name</dt><dd>Enroll in Course</dd>
+  <dt>Goal</dt><dd>The student is enrolled in a course section.</dd>
+  <dt>Primary actor</dt><dd>Student</dd>
+  <dt>Preconditions</dt><dd>The student is authenticated. The course catalog is published.</dd>
+  <dt>Trigger</dt><dd>The student selects a course and submits an enrollment request.</dd>
+  <dt>Main flow</dt><dd>1. Student selects a course. 2. System verifies prerequisites
+  (BR-1). 3. System checks seat availability. 4. System records the enrollment.
+  5. System confirms to the student.</dd>
+  <dt>Alternative flows</dt><dd>3a. Course is full → system offers the waitlist
+  (the «extend» from the diagram).</dd>
+  <dt>Exceptional flows</dt><dd>2a. Prerequisites not met → system rejects the request
+  and shows the missing prerequisite.</dd>
+  <dt>Postconditions</dt><dd>An enrollment record exists, or the student is waitlisted,
+  or the request was rejected with a reason.</dd>
+  <dt>Business rules</dt><dd>BR-1: a student cannot enroll when prerequisites are not met.</dd>
+</dl>
+<p><strong>Business rule vs. system behavior:</strong> the rule is a policy ("cannot enroll
+without prerequisites"). The behavior is what the system does about it ("verify, then
+reject with a message"). Name the rule (BR-1) and cite it inside the flow step where the
+system checks it.</p>
+</section>
+
+<section>
+<h2><span class="no">3 ·</span> Analysis Classes (Use-Case Realization)</h2>
+<table>
+  <tr><th>Stereotype</th><th>Responsibility</th><th>This example</th></tr>
+  <tr><td><code>«boundary»</code></td><td>Talks to the actor. One per actor–use-case pair. No business logic.</td><td>EnrollmentForm</td></tr>
+  <tr><td><code>«control»</code></td><td>Coordinates the use-case flow. Applies business rules. Usually one per use case.</td><td>EnrollmentController</td></tr>
+  <tr><td><code>«entity»</code></td><td>Holds the domain data and the rules that belong to that data.</td><td>Student, Course, Enrollment</td></tr>
+</table>
+<p>On paper you may draw the RUP symbols or a class box with the stereotype in
+guillemets — both are accepted. RUP symbols: boundary = a circle with a vertical bar
+on its left; control = a circle with an arrowhead on top; entity = a circle resting
+on a horizontal line.</p>
+<p><strong>Responsibility-driven assignment:</strong> ask "who has the data?" (entity),
+"who coordinates?" (control), "who faces the actor?" (boundary). In design, the
+analysis classes refine into UI classes, services/controllers, and entities + DAOs —
+behavior must not get lost in that refinement.</p>
+</section>
+
+<section>
+<h2><span class="no">4 ·</span> Sequence Diagram</h2>
+<ul>
+  <li>Left-to-right order: <strong>actor · boundary · control/service · repository/DAO · entity</strong>.</li>
+  <li>Solid arrow = call. Dashed arrow = return. Draw activation bars for every call.</li>
+  <li>Business-rule validation goes on the <strong>control</strong> (flow rules) or the
+      <strong>entity</strong> (data rules) — never on the boundary.</li>
+  <li>Simple rule → one conditional message with a guard like <code>[seats available]</code>.
+      Complex alternative flow → an <code>alt</code> frame, or a separate sequence diagram for that flow.</li>
+</ul>
+<div class="grid-panel">
+<pre class="mermaid">
+sequenceDiagram
+  actor S as Student
+  participant F as «boundary» :EnrollmentForm
+  participant C as «control» :EnrollmentController
+  participant R as «DAO» :CourseRepository
+  participant E as «entity» :Enrollment
+  S->>+F: submitEnrollment(courseId)
+  F->>+C: enroll(studentId, courseId)
+  C->>+R: findCourse(courseId)
+  R-->>-C: course
+  C->>C: verifyPrerequisites(student, course) [BR-1]
+  alt prerequisites met
+    C->>+E: create(student, course)
+    E-->>-C: enrollment
+    C-->>F: confirmation
+  else prerequisites not met
+    C-->>F: error: missing prerequisite
+  end
+  deactivate C
+  F-->>-S: show result
+</pre>
+</div>
+<div class="warn"><strong>Lose-marks list:</strong> boundary class doing validation ·
+missing return arrows · participants in random order · a message with no matching
+use-case step.</div>
+</section>
+
+<section>
+<h2><span class="no">5 ·</span> Collaboration (Communication) Diagram</h2>
+<ul>
+  <li>Same story as the sequence diagram, different emphasis: <strong>object links</strong>
+      instead of time order.</li>
+  <li>Objects are boxes named <code>:EnrollmentForm</code>; lines between them are structural links.</li>
+  <li>Write messages along the links with <strong>nested numbers</strong>:
+      1, then 1.1, 1.2 inside it, then 1.1.1 deeper. The numbering carries the order and the nesting.</li>
+  <li>Show validation and alternatives with guards: <code>1.2 [prerequisites met]: create(...)</code>.</li>
+</ul>
+<div class="grid-panel">
+<pre class="mermaid">
+flowchart LR
+  S["🧍 Student"]:::actor
+  F[":EnrollmentForm"]
+  C[":EnrollmentController"]
+  R[":CourseRepository"]
+  E[":Enrollment"]
+  S ---|"1: submitEnrollment(courseId)"| F
+  F ---|"1.1: enroll(studentId, courseId)"| C
+  C ---|"1.1.1: findCourse(courseId)"| R
+  C ---|"1.1.2: verifyPrerequisites() [BR-1]"| C
+  C ---|"1.1.3 [prereqs met]: create(student, course)"| E
+  classDef actor fill:none;
+</pre>
+</div>
+<p class="hand">Convert from the sequence diagram: each call keeps its receiver, and the
+lifeline order becomes the number nesting. Nothing new is invented here.</p>
+</section>
+
+<section>
+<h2><span class="no">6 ·</span> VOPC — View of Participating Classes</h2>
+<ul>
+  <li>One class diagram per use-case realization: all classes that appear in the interaction diagrams.</li>
+  <li>Show stereotypes, key attributes, operations, associations, dependencies, multiplicities.</li>
+  <li><strong>Derive every operation from a message:</strong> if the controller receives
+      <code>enroll(...)</code> in the sequence diagram, then <code>EnrollmentController</code>
+      must list <code>enroll(...)</code>. No message, no operation. No operation, no message.</li>
+</ul>
+<div class="grid-panel">
+<pre class="mermaid">
+classDiagram
+  class EnrollmentForm["«boundary» EnrollmentForm"]
+  EnrollmentForm : +submitEnrollment(courseId)
+  class EnrollmentController["«control» EnrollmentController"]
+  EnrollmentController : +enroll(studentId, courseId)
+  EnrollmentController : -verifyPrerequisites(student, course)
+  class CourseRepository["«DAO» CourseRepository"]
+  CourseRepository : +findCourse(courseId) Course
+  class Student["«entity» Student"]
+  Student : -studentId
+  Student : -completedCourses
+  class Course["«entity» Course"]
+  Course : -courseId
+  Course : -capacity
+  Course : -prerequisites
+  class Enrollment["«entity» Enrollment"]
+  Enrollment : -status
+  Enrollment : +create(student, course)
+  EnrollmentForm ..> EnrollmentController : uses
+  EnrollmentController ..> CourseRepository : uses
+  EnrollmentController ..> Enrollment : creates
+  Student "1" -- "0..*" Enrollment
+  Course "1" -- "0..*" Enrollment
+</pre>
+</div>
+<div class="warn"><strong>Lose-marks list:</strong> operations that no message justifies ·
+messages with no operation · missing multiplicities on entity associations · boundary
+classes linked directly to entities (they must go through the control).</div>
+</section>
+
+<section>
+<h2><span class="no">7 ·</span> Subsystem Design</h2>
+<table>
+  <tr><th>Role</th><th>Responsibility</th><th>This example</th></tr>
+  <tr><td><strong>Façade</strong></td><td>One entry point that hides the subsystem's internals. Callers see the interface only.</td><td>EnrollmentFacade / IEnrollmentService</td></tr>
+  <tr><td><strong>Service</strong></td><td>Implements one area of use-case logic behind the façade.</td><td>EnrollmentService, WaitlistService</td></tr>
+  <tr><td><strong>DAO</strong></td><td>Data access for one entity; hides SQL/persistence details.</td><td>CourseDAO</td></tr>
+  <tr><td><strong>Repository</strong></td><td>Collection-like access to entities; a domain-flavored DAO.</td><td>CourseRepository</td></tr>
+</table>
+<ul>
+  <li><strong>Encapsulation / information hiding:</strong> callers depend on the subsystem's
+      interface, never on its internal classes.</li>
+  <li><strong>Dependency reduction:</strong> UI → façade interface → services → repositories.
+      Arrows point one way, downward.</li>
+  <li>To show subsystem behavior, reuse the same views: a sequence diagram of a call
+      through the façade, and a class diagram of the interface plus its realizing classes.</li>
+</ul>
+</section>
+
+<footer>
+  <p>Workspace: <a href="../MISSION.md">MISSION.md</a> · Lessons start at
+  <a href="../lessons/0001-use-case-diagram.html">Lesson 1 — Use-Case Diagram</a>.
+  Ask your teacher in the Claude Code session when a rule here is unclear.</p>
+</footer>
+
+</div>
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({
+    startOnLoad: true,
+    look: "handDrawn",
+    theme: "neutral",
+    themeVariables: {
+      fontFamily: "Kalam, cursive",
+      background: "transparent",
+      primaryColor: "#faf7ef",
+      primaryBorderColor: "#3a3630",
+      primaryTextColor: "#3a3630",
+      lineColor: "#3a4a7a",
+      clusterBkg: "transparent",
+      clusterBorder: "#3a3630"
+    }
+  });
+</script>
+</body>
+</html>

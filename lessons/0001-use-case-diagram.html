@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 1 · Draw a Use-Case Diagram</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@600;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: oklch(96.5% 0.013 92);
+    --panel: oklch(98.4% 0.008 95);
+    --ink: oklch(28% 0.02 75);
+    --ink-soft: oklch(45% 0.02 75);
+    --pen: oklch(43% 0.11 262);
+    --pen-soft: oklch(43% 0.11 262 / 0.12);
+    --pencil: oklch(60% 0.015 75);
+    --red: oklch(49% 0.16 27);
+    --red-soft: oklch(49% 0.16 27 / 0.08);
+    --ok: oklch(50% 0.1 150);
+    --ok-soft: oklch(50% 0.1 150 / 0.1);
+    --rule: oklch(88% 0.018 250);
+    --space-xs: 4px; --space-sm: 8px; --space-md: 16px;
+    --space-lg: 32px; --space-xl: 56px; --space-2xl: 96px;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Atkinson Hyperlegible", Verdana, sans-serif;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+  }
+  .sheet { max-width: 880px; margin: 0 auto; padding: var(--space-lg) var(--space-md) var(--space-2xl); }
+  h1, h2, h3 { font-family: Besley, Georgia, serif; line-height: 1.15; }
+  h1 { font-size: clamp(2rem, 5vw, 2.9rem); font-weight: 800; }
+  h2 { font-size: 1.55rem; font-weight: 700; margin-top: var(--space-xl); }
+  h3 { font-size: 1.15rem; font-weight: 700; margin-top: var(--space-lg); }
+  p, ul, ol { margin-top: var(--space-md); max-width: 68ch; }
+  li + li { margin-top: var(--space-xs); }
+  a { color: var(--pen); }
+  code { font-family: inherit; font-weight: 700; }
+  .hand { font-family: Kalam, "Comic Sans MS", cursive; color: var(--pen); }
+
+  header.lesson-head { padding-top: var(--space-md); }
+  .breadcrumb {
+    font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .lesson-meta { margin-top: var(--space-sm); color: var(--ink-soft); font-size: 0.95rem; }
+  .headrule { border: 0; border-top: 2px solid var(--ink); margin-top: var(--space-md); }
+  .headrule + .headrule { border-top-width: 1px; margin-top: 3px; }
+
+  .mission-note {
+    margin-top: var(--space-lg);
+    background: var(--pen-soft);
+    padding: var(--space-md) var(--space-lg);
+    max-width: none;
+  }
+  .mission-note p { margin-top: var(--space-xs); }
+
+  /* Diagram panels: graph paper */
+  .grid-panel {
+    margin-top: var(--space-md);
+    background:
+      repeating-linear-gradient(to right, var(--rule) 0 1px, transparent 1px 24px),
+      repeating-linear-gradient(to bottom, var(--rule) 0 1px, transparent 1px 24px),
+      var(--panel);
+    border: 1px solid var(--rule);
+    padding: var(--space-md);
+    overflow-x: auto;
+  }
+  .grid-panel .mermaid { display: flex; justify-content: center; }
+
+  /* Step layout: big margin numeral, caption, diagram */
+  .step { display: grid; grid-template-columns: 72px 1fr; gap: 0 var(--space-md); margin-top: var(--space-xl); }
+  .step-num {
+    font-family: Besley, Georgia, serif; font-weight: 800;
+    font-size: 3rem; color: var(--pencil); line-height: 1;
+  }
+  .step h3 { margin-top: 0; }
+  .step .grid-panel, .step p, .step ul { grid-column: 2; }
+  .step > p { margin-top: var(--space-sm); }
+  .margin-note { font-family: Kalam, cursive; color: var(--pen); font-size: 1rem; margin-top: var(--space-sm); }
+
+  table { border-collapse: collapse; margin-top: var(--space-md); width: 100%; }
+  th, td { border: 1px solid var(--rule); padding: var(--space-sm) var(--space-md); text-align: left; vertical-align: top; }
+  th { font-family: Besley, Georgia, serif; font-size: 0.95rem; background: var(--panel); }
+
+  .warn { margin-top: var(--space-lg); background: var(--red-soft); padding: var(--space-md) var(--space-lg); max-width: none; }
+  .warn h2, .warn h3 { color: var(--red); margin-top: 0; }
+  .warn strong { color: var(--red); }
+
+  /* Quiz */
+  .quiz-q { margin-top: var(--space-lg); }
+  .quiz-q p.q { font-weight: 700; }
+  .quiz-opts { display: flex; flex-direction: column; gap: var(--space-sm); margin-top: var(--space-sm); max-width: 60ch; }
+  .quiz-opts button {
+    font: inherit; text-align: left; cursor: pointer;
+    background: var(--panel); color: var(--ink);
+    border: 1px solid var(--pencil); padding: var(--space-sm) var(--space-md);
+  }
+  .quiz-opts button:hover { border-color: var(--pen); }
+  .quiz-opts button.correct { background: var(--ok-soft); border-color: var(--ok); }
+  .quiz-opts button.wrong { background: var(--red-soft); border-color: var(--red); }
+  .quiz-why { display: none; margin-top: var(--space-sm); font-size: 0.98rem; color: var(--ink-soft); max-width: 60ch; }
+  .quiz-q.answered .quiz-why { display: block; }
+
+  details { margin-top: var(--space-lg); }
+  summary {
+    cursor: pointer; font-family: Besley, Georgia, serif; font-weight: 700;
+    font-size: 1.1rem; color: var(--pen);
+  }
+  .checklist { list-style: none; padding-left: 0; }
+  .checklist li::before { content: "☐ "; color: var(--pen); }
+
+  footer { margin-top: var(--space-2xl); border-top: 2px solid var(--ink); padding-top: var(--space-md); color: var(--ink-soft); font-size: 0.95rem; }
+
+  @media print {
+    body { background: white; font-size: 10.5pt; }
+    .sheet { max-width: none; padding: 0; }
+    .step, .grid-panel, .quiz-q, table { break-inside: avoid; }
+    a { color: var(--ink); text-decoration: none; }
+    .quiz-opts button { border: 1px solid var(--pencil); }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<header class="lesson-head">
+  <p class="breadcrumb">CS425 · Part A · Lesson 1 of 8</p>
+  <h1>Draw a Use-Case Diagram</h1>
+  <p class="lesson-meta">≈ 20 minutes · pen and paper required at the end ·
+    <a href="../reference/part-a-cheatsheet.html">open the Part A cheat sheet</a></p>
+  <hr class="headrule"><hr class="headrule">
+</header>
+
+<div class="mission-note">
+  <p><strong>Why this lesson.</strong> The exam guide lists use-case modeling first. Every later
+  artifact (sequence, collaboration, VOPC) must stay consistent with this diagram. Learn it
+  first, and the rest of Part A has a skeleton to hang on.</p>
+</div>
+
+<h2>What the exam asks</h2>
+<ul>
+  <li>Identify actors, use cases, the system boundary, and actor–use-case associations.</li>
+  <li>Use <code>«include»</code> and <code>«extend»</code> only when they are needed.</li>
+  <li>Show <em>what</em> the system must do, not <em>how</em> the software will do it.</li>
+</ul>
+
+<h2>The notation, piece by piece</h2>
+<p>Mermaid draws these shapes in a hand-drawn style below. On paper, use the exact
+UML shapes in this table.</p>
+<table>
+  <tr><th>Element</th><th>On paper, draw…</th><th>Rule</th></tr>
+  <tr><td><strong>Actor</strong></td><td>A stick figure with the name below it.</td>
+      <td>An actor is a role or an external system. It is always <em>outside</em> the boundary.</td></tr>
+  <tr><td><strong>Use case</strong></td><td>An oval with the name inside.</td>
+      <td>Name it as a verb + noun: <em>Enroll in Course</em>, not <em>Enrollment</em>.</td></tr>
+  <tr><td><strong>System boundary</strong></td><td>A rectangle around all use cases, name at the top.</td>
+      <td>Use cases go inside. Actors stay outside.</td></tr>
+  <tr><td><strong>Association</strong></td><td>A plain solid line, actor to oval.</td>
+      <td>No arrowhead is needed on an association.</td></tr>
+  <tr><td><strong>«include»</strong></td><td>A dashed arrow, base → included, labeled «include».</td>
+      <td>Mandatory. The base use case always runs the included one.</td></tr>
+  <tr><td><strong>«extend»</strong></td><td>A dashed arrow, extension → base, labeled «extend».</td>
+      <td>Optional. Write the condition next to the arrow, e.g. <em>{course is full}</em>.</td></tr>
+</table>
+<p class="margin-note">Arrow memory trick: the <b>base points at «include»</b> (it needs it),
+but the <b>«extend» points at the base</b> (the extra knocks on the base's door).</p>
+
+<h2>Build one in six moves</h2>
+<p>Scenario for this lesson: <strong>a university course registration system</strong>.
+Students enroll in courses, drop courses, and pay tuition through an external payment
+gateway. A registrar can also drop a student. The system always verifies prerequisites
+before an enrollment. When a course is full, the student can join a waitlist instead.</p>
+
+<section class="step">
+  <div class="step-num">1</div>
+  <div>
+    <h3>Draw the boundary and name the system</h3>
+    <p>Draw one large rectangle. Write the system name at the top. This one line answers
+    "what is inside scope?" for the whole question.</p>
+  </div>
+  <div class="grid-panel">
+<pre class="mermaid">
+flowchart LR
+  subgraph SYS["Course Registration System"]
+    ghost[" "]:::ghost
+  end
+  classDef ghost fill:none,stroke:none,color:transparent;
+</pre>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-num">2</div>
+  <div>
+    <h3>Place the actors outside the boundary</h3>
+    <p>Scan the scenario for roles and external systems. Here: <em>Student</em>,
+    <em>Registrar</em>, and the <em>Payment Gateway</em>. Put primary actors on the left
+    and external systems on the right. On paper, draw stick figures.</p>
+    <p class="margin-note">The Payment Gateway is software, but it is still an actor —
+    it is outside our system.</p>
+  </div>
+  <div class="grid-panel">
+<pre class="mermaid">
+flowchart LR
+  ST(["🧍 Student"]):::actor
+  RG(["🧍 Registrar"]):::actor
+  subgraph SYS["Course Registration System"]
+    ghost[" "]:::ghost
+  end
+  PG(["🖥 Payment Gateway"]):::actor
+  ST ~~~ SYS
+  RG ~~~ SYS
+  SYS ~~~ PG
+  classDef ghost fill:none,stroke:none,color:transparent;
+  classDef actor fill:none,stroke-dasharray:0;
+</pre>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-num">3</div>
+  <div>
+    <h3>Add one oval per user goal</h3>
+    <p>A use case is a goal an actor completes in one sitting. Here: <em>Enroll in
+    Course</em>, <em>Drop Course</em>, <em>Pay Tuition</em>. Name each one verb + noun.
+    Do not add ovals for small internal steps yet.</p>
+  </div>
+  <div class="grid-panel">
+<pre class="mermaid">
+flowchart LR
+  ST(["🧍 Student"]):::actor
+  RG(["🧍 Registrar"]):::actor
+  subgraph SYS["Course Registration System"]
+    UC1(["Enroll in Course"])
+    UC2(["Drop Course"])
+    UC3(["Pay Tuition"])
+  end
+  PG(["🖥 Payment Gateway"]):::actor
+  ST ~~~ UC1
+  RG ~~~ UC2
+  UC3 ~~~ PG
+  classDef actor fill:none;
+</pre>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-num">4</div>
+  <div>
+    <h3>Connect actors to their use cases</h3>
+    <p>Draw a plain solid line from each actor to each use case it takes part in.
+    Read the scenario again to catch every pair. The registrar drops students, so
+    <em>Registrar — Drop Course</em> gets a line too.</p>
+  </div>
+  <div class="grid-panel">
+<pre class="mermaid">
+flowchart LR
+  ST(["🧍 Student"]):::actor
+  RG(["🧍 Registrar"]):::actor
+  subgraph SYS["Course Registration System"]
+    UC1(["Enroll in Course"])
+    UC2(["Drop Course"])
+    UC3(["Pay Tuition"])
+  end
+  PG(["🖥 Payment Gateway"]):::actor
+  ST --- UC1
+  ST --- UC2
+  ST --- UC3
+  RG --- UC2
+  UC3 --- PG
+  classDef actor fill:none;
+</pre>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-num">5</div>
+  <div>
+    <h3>Add «include» for mandatory shared behavior</h3>
+    <p>The scenario says the system <em>always</em> verifies prerequisites before an
+    enrollment. "Always" signals <code>«include»</code>. Draw a dashed arrow <strong>from
+    Enroll in Course to Verify Prerequisites</strong> and label it «include».</p>
+    <p class="margin-note">The base points at the thing it needs.</p>
+  </div>
+  <div class="grid-panel">
+<pre class="mermaid">
+flowchart LR
+  ST(["🧍 Student"]):::actor
+  RG(["🧍 Registrar"]):::actor
+  subgraph SYS["Course Registration System"]
+    UC1(["Enroll in Course"])
+    UC4(["Verify Prerequisites"])
+    UC2(["Drop Course"])
+    UC3(["Pay Tuition"])
+    UC1 -. "«include»" .-> UC4
+  end
+  PG(["🖥 Payment Gateway"]):::actor
+  ST --- UC1
+  ST --- UC2
+  ST --- UC3
+  RG --- UC2
+  UC3 --- PG
+  classDef actor fill:none;
+</pre>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-num">6</div>
+  <div>
+    <h3>Add «extend» for optional, conditional behavior</h3>
+    <p>Joining the waitlist happens only <em>when the course is full</em>. A condition
+    signals <code>«extend»</code>. Draw a dashed arrow <strong>from Join Waitlist to
+    Enroll in Course</strong>, label it «extend», and write the condition beside it.</p>
+    <p class="margin-note">Note the flipped direction: the extension points at the base.</p>
+  </div>
+  <div class="grid-panel">
+<pre class="mermaid">
+flowchart LR
+  ST(["🧍 Student"]):::actor
+  RG(["🧍 Registrar"]):::actor
+  subgraph SYS["Course Registration System"]
+    UC1(["Enroll in Course"])
+    UC4(["Verify Prerequisites"])
+    UC5(["Join Waitlist"])
+    UC2(["Drop Course"])
+    UC3(["Pay Tuition"])
+    UC1 -. "«include»" .-> UC4
+    UC5 -. "«extend» {course is full}" .-> UC1
+  end
+  PG(["🖥 Payment Gateway"]):::actor
+  ST --- UC1
+  ST --- UC2
+  ST --- UC3
+  RG --- UC2
+  UC3 --- PG
+  classDef actor fill:none;
+</pre>
+  </div>
+</section>
+
+<div class="warn">
+  <h3>Red-pen list: how students lose marks here</h3>
+  <ul>
+    <li><strong>Reversed arrows.</strong> «include» goes base → included. «extend» goes extension → base. Graders check this first.</li>
+    <li><strong>Actors inside the boundary.</strong> An actor is never inside the rectangle.</li>
+    <li><strong>Noun names.</strong> "Enrollment" is not a use case. "Enroll in Course" is.</li>
+    <li><strong>Step decomposition.</strong> "Enter password", "Click submit" are steps of a flow, not use cases. Keep ovals at the goal level.</li>
+    <li><strong>«include» for optional behavior.</strong> If there is a condition, it is «extend».</li>
+    <li><strong>Arrowheads on associations.</strong> An actor line is plain. Save arrows for the dashed stereotypes.</li>
+  </ul>
+</div>
+
+<h2>Quick check</h2>
+<p>Answer each question. You get the reason immediately.</p>
+
+<div class="quiz-q">
+  <p class="q">1 · "Enroll in Course" always runs "Verify Prerequisites". Which arrow is correct?</p>
+  <div class="quiz-opts">
+    <button data-ok="1">Dashed arrow from Enroll in Course → Verify Prerequisites, labeled «include»</button>
+    <button>Dashed arrow from Verify Prerequisites → Enroll in Course, labeled «include»</button>
+    <button>Solid line with no label</button>
+  </div>
+  <p class="quiz-why">The base use case points at the behavior it includes. Mandatory + shared = «include», base → included.</p>
+</div>
+
+<div class="quiz-q">
+  <p class="q">2 · "Join Waitlist" happens only when the course is full. Which arrow is correct?</p>
+  <div class="quiz-opts">
+    <button>Dashed arrow from Enroll in Course → Join Waitlist, labeled «extend»</button>
+    <button data-ok="1">Dashed arrow from Join Waitlist → Enroll in Course, labeled «extend», with the condition written beside it</button>
+    <button>Dashed arrow from Join Waitlist → Enroll in Course, labeled «include»</button>
+  </div>
+  <p class="quiz-why">«extend» reverses the direction: the extension points at the base. The condition belongs next to the arrow.</p>
+</div>
+
+<div class="quiz-q">
+  <p class="q">3 · The system sends card payments to an external payment service. How do you model that service?</p>
+  <div class="quiz-opts">
+    <button>As a use case inside the boundary</button>
+    <button data-ok="1">As an actor outside the boundary, associated with "Pay Tuition"</button>
+    <button>Leave it out — it is not a person</button>
+  </div>
+  <p class="quiz-why">An actor is anything outside the system that interacts with it. External software qualifies.</p>
+</div>
+
+<div class="quiz-q">
+  <p class="q">4 · Which is a correctly named use case?</p>
+  <div class="quiz-opts">
+    <button>Course</button>
+    <button>Enrollment Management</button>
+    <button data-ok="1">Drop Course</button>
+  </div>
+  <p class="quiz-why">Verb + noun, one goal, one sitting. "Course" is an entity. "Enrollment Management" is a vague noun phrase.</p>
+</div>
+
+<div class="quiz-q">
+  <p class="q">5 · The scenario says "a student cannot enroll when prerequisites are not met." Where does this rule live?</p>
+  <div class="quiz-opts">
+    <button>As its own use case oval, "Reject Enrollment"</button>
+    <button data-ok="1">It is a business rule. The diagram shows "Verify Prerequisites"; the rule's detail goes in the use-case flows (lesson 2)</button>
+    <button>As a label on the Student actor</button>
+  </div>
+  <p class="quiz-why">The guide separates business rules from what the system does. The diagram stays at the goal level; rules and validations live in the specification's flows.</p>
+</div>
+
+<h2>Now draw on paper</h2>
+<p>Set a 5-minute timer. Draw a use-case diagram for this scenario, then open the model
+answer and grade yourself.</p>
+<div class="mission-note">
+  <p><strong>Library Lending System.</strong> Members borrow and return books at a
+  self-service kiosk. Before a member borrows a book, the system always verifies the
+  membership. When a returned book is overdue, the member can also pay a late fee; the
+  system confirms that payment through an external payment service. A librarian
+  registers new members.</p>
+</div>
+
+<details id="model-answer">
+  <summary>Open the model answer</summary>
+  <div class="grid-panel">
+<pre class="mermaid">
+flowchart LR
+  ME(["🧍 Member"]):::actor
+  LB(["🧍 Librarian"]):::actor
+  subgraph SYS["Library Lending System"]
+    B(["Borrow Book"])
+    V(["Verify Membership"])
+    R(["Return Book"])
+    F(["Pay Late Fee"])
+    G(["Register Member"])
+    B -. "«include»" .-> V
+    F -. "«extend» {book is overdue}" .-> R
+  end
+  PS(["🖥 Payment Service"]):::actor
+  ME --- B
+  ME --- R
+  LB --- G
+  F --- PS
+  classDef actor fill:none;
+</pre>
+  </div>
+  <h3>Grade yourself</h3>
+  <ul class="checklist">
+    <li>Boundary rectangle with the system name at the top.</li>
+    <li>Member, Librarian, and Payment Service outside the boundary.</li>
+    <li>Five ovals, each named verb + noun.</li>
+    <li>Plain association lines: Member–Borrow, Member–Return, Librarian–Register Member, Payment Service–Pay Late Fee.</li>
+    <li>«include» arrow from Borrow Book → Verify Membership ("always" in the scenario).</li>
+    <li>«extend» arrow from Pay Late Fee → Return Book, with {book is overdue} beside it.</li>
+    <li>No arrowheads on association lines. No actors inside the box.</li>
+  </ul>
+  <p>Score 6–7: move to lesson 2. Score 4–5: redraw once, arrows only. Score ≤ 3: reread
+  the six moves, then redraw the whole thing.</p>
+</details>
+
+<footer>
+  <p>Stuck on anything? Ask your teacher in the Claude Code session — for example:
+  <span class="hand">"why is Verify Membership not connected to the Member actor?"</span></p>
+  <p>Next: <strong>Lesson 2 — write the use-case specification</strong> (flows,
+  preconditions, business rules) for this same enrollment scenario.
+  Reference: <a href="../reference/part-a-cheatsheet.html">Part A cheat sheet</a>.</p>
+</footer>
+
+</div>
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({
+    startOnLoad: true,
+    look: "handDrawn",
+    theme: "neutral",
+    themeVariables: {
+      fontFamily: "Kalam, cursive",
+      background: "transparent",
+      primaryColor: "#faf7ef",
+      primaryBorderColor: "#3a3630",
+      primaryTextColor: "#3a3630",
+      lineColor: "#3a4a7a",
+      clusterBkg: "transparent",
+      clusterBorder: "#3a3630"
+    }
+  });
+
+  const details = document.getElementById("model-answer");
+  details.addEventListener("toggle", () => {
+    if (details.open) mermaid.run({ querySelector: "#model-answer .mermaid:not([data-processed])" });
+  }, { once: false });
+
+  document.querySelectorAll(".quiz-q").forEach(q => {
+    q.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (q.classList.contains("answered")) return;
+        q.classList.add("answered");
+        btn.classList.add(btn.dataset.ok ? "correct" : "wrong");
+        if (!btn.dataset.ok) q.querySelector("[data-ok]").classList.add("correct");
+      });
+    });
+  });
+</script>
+</body>
+</html>

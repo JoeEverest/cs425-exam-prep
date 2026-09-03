@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 3 · Find the Analysis Classes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@600;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: oklch(96.5% 0.013 92);
+    --panel: oklch(98.4% 0.008 95);
+    --ink: oklch(28% 0.02 75);
+    --ink-soft: oklch(45% 0.02 75);
+    --pen: oklch(43% 0.11 262);
+    --pen-soft: oklch(43% 0.11 262 / 0.12);
+    --pencil: oklch(60% 0.015 75);
+    --red: oklch(49% 0.16 27);
+    --red-soft: oklch(49% 0.16 27 / 0.08);
+    --ok: oklch(50% 0.1 150);
+    --ok-soft: oklch(50% 0.1 150 / 0.1);
+    --rule: oklch(88% 0.018 250);
+    --space-xs: 4px; --space-sm: 8px; --space-md: 16px;
+    --space-lg: 32px; --space-xl: 56px; --space-2xl: 96px;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Atkinson Hyperlegible", Verdana, sans-serif;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+  }
+  .sheet { max-width: 880px; margin: 0 auto; padding: var(--space-lg) var(--space-md) var(--space-2xl); }
+  h1, h2, h3 { font-family: Besley, Georgia, serif; line-height: 1.15; }
+  h1 { font-size: clamp(2rem, 5vw, 2.9rem); font-weight: 800; }
+  h2 { font-size: 1.55rem; font-weight: 700; margin-top: var(--space-xl); }
+  h3 { font-size: 1.15rem; font-weight: 700; margin-top: var(--space-lg); }
+  p, ul, ol { margin-top: var(--space-md); max-width: 68ch; }
+  li + li { margin-top: var(--space-xs); }
+  a { color: var(--pen); }
+  code { font-family: inherit; font-weight: 700; }
+  .hand { font-family: Kalam, "Comic Sans MS", cursive; color: var(--pen); }
+
+  header.lesson-head { padding-top: var(--space-md); }
+  .breadcrumb { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+  .lesson-meta { margin-top: var(--space-sm); color: var(--ink-soft); font-size: 0.95rem; }
+  .headrule { border: 0; border-top: 2px solid var(--ink); margin-top: var(--space-md); }
+  .headrule + .headrule { border-top-width: 1px; margin-top: 3px; }
+
+  .mission-note { margin-top: var(--space-lg); background: var(--pen-soft); padding: var(--space-md) var(--space-lg); max-width: none; }
+  .mission-note p { margin-top: var(--space-xs); }
+
+  .grid-panel {
+    margin-top: var(--space-md);
+    background:
+      repeating-linear-gradient(to right, var(--rule) 0 1px, transparent 1px 24px),
+      repeating-linear-gradient(to bottom, var(--rule) 0 1px, transparent 1px 24px),
+      var(--panel);
+    border: 1px solid var(--rule);
+    padding: var(--space-md);
+    overflow-x: auto;
+  }
+  .grid-panel .mermaid { display: flex; justify-content: center; }
+
+  .step { display: grid; grid-template-columns: 72px 1fr; gap: 0 var(--space-md); margin-top: var(--space-xl); }
+  .step-num { font-family: Besley, Georgia, serif; font-weight: 800; font-size: 3rem; color: var(--pencil); line-height: 1; }
+  .step h3 { margin-top: 0; }
+  .step .grid-panel, .step p, .step ul, .step table { grid-column: 2; }
+  .step > p { margin-top: var(--space-sm); }
+  .margin-note { font-family: Kalam, cursive; color: var(--pen); font-size: 1rem; margin-top: var(--space-sm); }
+
+  table { border-collapse: collapse; margin-top: var(--space-md); width: 100%; }
+  th, td { border: 1px solid var(--rule); padding: var(--space-sm) var(--space-md); text-align: left; vertical-align: top; }
+  th { font-family: Besley, Georgia, serif; font-size: 0.95rem; background: var(--panel); }
+
+  .warn { margin-top: var(--space-lg); background: var(--red-soft); padding: var(--space-md) var(--space-lg); max-width: none; }
+  .warn h3 { color: var(--red); margin-top: 0; }
+  .warn strong { color: var(--red); }
+
+  .quiz-q { margin-top: var(--space-lg); }
+  .quiz-q p.q { font-weight: 700; }
+  .quiz-opts { display: flex; flex-direction: column; gap: var(--space-sm); margin-top: var(--space-sm); max-width: 60ch; }
+  .quiz-opts button {
+    font: inherit; text-align: left; cursor: pointer;
+    background: var(--panel); color: var(--ink);
+    border: 1px solid var(--pencil); padding: var(--space-sm) var(--space-md);
+  }
+  .quiz-opts button:hover { border-color: var(--pen); }
+  .quiz-opts button.correct { background: var(--ok-soft); border-color: var(--ok); }
+  .quiz-opts button.wrong { background: var(--red-soft); border-color: var(--red); }
+  .quiz-why { display: none; margin-top: var(--space-sm); font-size: 0.98rem; color: var(--ink-soft); max-width: 60ch; }
+  .quiz-q.answered .quiz-why { display: block; }
+
+  details { margin-top: var(--space-lg); }
+  summary { cursor: pointer; font-family: Besley, Georgia, serif; font-weight: 700; font-size: 1.1rem; color: var(--pen); }
+  .checklist { list-style: none; padding-left: 0; }
+  .checklist li::before { content: "☐ "; color: var(--pen); }
+
+  footer { margin-top: var(--space-2xl); border-top: 2px solid var(--ink); padding-top: var(--space-md); color: var(--ink-soft); font-size: 0.95rem; }
+
+  @media print {
+    body { background: white; font-size: 10.5pt; }
+    .sheet { max-width: none; padding: 0; }
+    .step, .grid-panel, .quiz-q, table { break-inside: avoid; }
+    a { color: var(--ink); text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<header class="lesson-head">
+  <p class="breadcrumb">CS425 · Part A · Lesson 3 of 8</p>
+  <h1>Find the Analysis Classes</h1>
+  <p class="lesson-meta">≈ 20 minutes · pen and paper required at the end ·
+    <a href="../reference/part-a-cheatsheet.html">cheat sheet</a> ·
+    <a href="0002-use-case-specification.html">← Lesson 2</a></p>
+  <hr class="headrule"><hr class="headrule">
+</header>
+
+<div class="mission-note">
+  <p><strong>Why this lesson.</strong> A use-case realization shows <em>which objects</em>
+  collaborate to perform the use case. The classes you find here become the lifelines of
+  Lesson 4's sequence diagram. Wrong classes here means a wrong diagram there.</p>
+</div>
+
+<h2>What the exam asks</h2>
+<ul>
+  <li>Develop a use-case realization: how objects collaborate to perform the use case.</li>
+  <li>Identify the participating boundary, control, and entity classes, and explain their responsibilities.</li>
+  <li>Assign behavior with responsibility-driven design.</li>
+  <li>Refine analysis classes into design classes without losing behavior.</li>
+</ul>
+
+<h2>The three stereotypes</h2>
+<table>
+  <tr><th>Stereotype</th><th>Job</th><th>Ask yourself</th><th>How many?</th></tr>
+  <tr><td><code>«boundary»</code></td><td>Talks to the actor. Translates clicks into requests and results into displays. No business logic.</td><td>"Who faces the actor?"</td><td>One per actor–use-case pair.</td></tr>
+  <tr><td><code>«control»</code></td><td>Coordinates the flow of the use case. Runs the steps, applies the business rules, decides the branches.</td><td>"Who coordinates?"</td><td>Usually one per use case.</td></tr>
+  <tr><td><code>«entity»</code></td><td>Holds domain data and the rules that belong to that data. Lives longer than the use case.</td><td>"Who has the data?"</td><td>One per domain concept in the flows.</td></tr>
+</table>
+<p>On paper, draw each class either as a box with the stereotype in guillemets, or as
+the RUP symbol: boundary = a circle with a vertical bar on its left, control = a circle
+with an arrowhead on top, entity = a circle resting on a horizontal line. Both notations
+score; pick one and stay with it.</p>
+<p class="margin-note">Memory trick: the boundary bar is a wall to the outside, the
+control arrow spins the loop, the entity circle sits on the ground — it persists.</p>
+
+<h2>From specification to classes in five moves</h2>
+<p>Input: the <strong>Enroll in Course</strong> specification from Lesson 2. Keep it beside you.</p>
+
+<section class="step">
+  <div class="step-num">1</div>
+  <div>
+    <h3>One boundary per actor–use-case pair</h3>
+    <p>The Student actor uses Enroll in Course through one interface. Name it after the
+    interaction: <code>EnrollmentForm</code>. Its only responsibilities: accept the
+    request, show the result.</p>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-num">2</div>
+  <div>
+    <h3>One control per use case</h3>
+    <p>Name it after the use case: <code>EnrollmentController</code>. It owns the flow:
+    verify prerequisites, check seats, record the enrollment, decide waitlist or
+    rejection. The controller knows the <em>order</em>; it does not own the data.</p>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-num">3</div>
+  <div>
+    <h3>One entity per domain concept in the flows</h3>
+    <p>Underline the nouns in your main flow: student, course, enrollment. Each noun
+    that carries data becomes an entity: <code>Student</code>, <code>Course</code>,
+    <code>Enrollment</code>. The catalog and the waitlist can stay attributes of
+    <code>Course</code> at this level.</p>
+    <p class="margin-note">The kiosk, the screen, and the button are not entities.
+    They are the boundary's problem.</p>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-num">4</div>
+  <div>
+    <h3>Assign responsibilities, step by step</h3>
+    <p>Walk the specification. For each step ask the three questions from the table
+    above. Write the result as a responsibility table — this <em>is</em>
+    responsibility-driven design, and it is worth marks on its own.</p>
+    <table>
+      <tr><th>Spec step</th><th>Class</th><th>Responsibility</th></tr>
+      <tr><td>1 · Student selects a course</td><td>EnrollmentForm</td><td>Present the catalog; capture the selection.</td></tr>
+      <tr><td>2 · Verify prerequisites [BR-1]</td><td>EnrollmentController + Course, Student</td><td>Controller coordinates the check; Course knows its prerequisites; Student knows the completed courses.</td></tr>
+      <tr><td>3 · Check seat availability</td><td>EnrollmentController + Course</td><td>Controller asks; Course knows its capacity and count.</td></tr>
+      <tr><td>4 · Record the enrollment</td><td>EnrollmentController + Enrollment</td><td>Controller requests creation; Enrollment holds the record.</td></tr>
+      <tr><td>5 · Confirm to the student</td><td>EnrollmentForm</td><td>Show the confirmation and section details.</td></tr>
+      <tr><td>3a · Offer the waitlist</td><td>EnrollmentController + Course</td><td>Controller decides the branch; Course manages its waitlist.</td></tr>
+      <tr><td>2a · Reject the request</td><td>EnrollmentController + EnrollmentForm</td><td>Controller decides; form shows the reason.</td></tr>
+    </table>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-num">5</div>
+  <div>
+    <h3>Draw the realization</h3>
+    <p>Actor — boundary — control — entities, left to right. The boundary links only to
+    the control. The control links to every entity it coordinates.</p>
+  </div>
+  <div class="grid-panel">
+<pre class="mermaid">
+flowchart LR
+  ST(["🧍 Student"]):::actor
+  F["«boundary»
+EnrollmentForm"]
+  C["«control»
+EnrollmentController"]
+  S["«entity»
+Student"]
+  K["«entity»
+Course"]
+  E["«entity»
+Enrollment"]
+  ST --- F
+  F --- C
+  C --- S
+  C --- K
+  C --- E
+  classDef actor fill:none;
+</pre>
+  </div>
+</section>
+
+<h2>Refine to design classes — without losing behavior</h2>
+<p>In design, each analysis class maps to something buildable. The professor's rule:
+every responsibility from move 4 must still have an owner after the refinement.</p>
+<table>
+  <tr><th>Analysis class</th><th>Design class(es)</th><th>What changes</th></tr>
+  <tr><td>EnrollmentForm «boundary»</td><td>EnrollmentForm (UI class)</td><td>Gains concrete widgets and events; still no business logic.</td></tr>
+  <tr><td>EnrollmentController «control»</td><td>EnrollmentController / EnrollmentService</td><td>Same coordination role; now calls repositories instead of touching entities directly for persistence.</td></tr>
+  <tr><td>Student, Course, Enrollment «entity»</td><td>Entity classes + <code>CourseRepository</code>, <code>EnrollmentRepository</code> «DAO»</td><td>Data rules stay on the entities; loading and saving move to DAOs/repositories.</td></tr>
+</table>
+<div class="grid-panel">
+<pre class="mermaid">
+flowchart LR
+  ST(["🧍 Student"]):::actor
+  F["EnrollmentForm
+(UI)"]
+  C["EnrollmentController"]
+  R["«DAO»
+CourseRepository"]
+  Q["«DAO»
+EnrollmentRepository"]
+  E["Enrollment"]
+  DB[("stored data")]
+  ST --- F
+  F --- C
+  C --- R
+  C --- E
+  C --- Q
+  R --- DB
+  Q --- DB
+  classDef actor fill:none;
+</pre>
+  </div>
+<p>Checking BR-1 was a controller + entity responsibility in analysis. It still is in
+design — the repositories only fetch the data. If a check silently disappears during
+refinement, the consistency check fails.</p>
+
+<div class="warn">
+  <h3>Red-pen list: how students lose marks here</h3>
+  <ul>
+    <li><strong>Boundary wired to entities.</strong> The form never touches Course or Enrollment. Everything goes through the control.</li>
+    <li><strong>Business logic in the boundary.</strong> "The form verifies prerequisites" costs marks twice — here and again in Lesson 4.</li>
+    <li><strong>A controller army.</strong> One use case, one control class. Ten controllers signal guessing.</li>
+    <li><strong>Screen furniture as entities.</strong> Button, Screen, and Kiosk are not domain concepts.</li>
+    <li><strong>The god controller.</strong> If the controller also stores capacity and prerequisites, the entities are empty shells. Data rules belong on the data.</li>
+    <li><strong>Lost behavior in refinement.</strong> Every analysis responsibility must reappear in a design class.</li>
+  </ul>
+</div>
+
+<h2>Quick check</h2>
+
+<div class="quiz-q">
+  <p class="q">1 · Who is responsible for the BR-1 prerequisite check?</p>
+  <div class="quiz-opts">
+    <button>EnrollmentForm — it is the first class the request reaches</button>
+    <button data-ok="1">EnrollmentController coordinates the check; Course and Student own the data it needs</button>
+    <button>The Student actor</button>
+  </div>
+  <p class="quiz-why">Rule checks are coordinated by the control, using data owned by entities. The boundary only carries the request and the answer.</p>
+</div>
+
+<div class="quiz-q">
+  <p class="q">2 · How many control classes does "Enroll in Course" need?</p>
+  <div class="quiz-opts">
+    <button data-ok="1">One — a control class per use case</button>
+    <button>One per flow step</button>
+    <button>None — the entities coordinate themselves</button>
+  </div>
+  <p class="quiz-why">The control owns the whole flow of one use case, including its alternative and exceptional branches.</p>
+</div>
+
+<div class="quiz-q">
+  <p class="q">3 · Which link is wrong in a use-case realization?</p>
+  <div class="quiz-opts">
+    <button>EnrollmentForm — EnrollmentController</button>
+    <button>EnrollmentController — Course</button>
+    <button data-ok="1">EnrollmentForm — Enrollment</button>
+  </div>
+  <p class="quiz-why">A boundary never links directly to an entity. The control sits between them — that is the point of the pattern.</p>
+</div>
+
+<div class="quiz-q">
+  <p class="q">4 · "Course knows its capacity and its current enrollment count." Why does this belong on the entity, not the controller?</p>
+  <div class="quiz-opts">
+    <button data-ok="1">Data rules live with the data owner; the controller only asks and coordinates</button>
+    <button>Because the controller is already too long</button>
+    <button>It does not — the controller should hold all values</button>
+  </div>
+  <p class="quiz-why">Responsibility-driven design: "who has the data?" answers "who checks the rule about that data". A controller that hoards data creates empty entities.</p>
+</div>
+
+<div class="quiz-q">
+  <p class="q">5 · During refinement, CourseRepository appears. What happened to the entity Course?</p>
+  <div class="quiz-opts">
+    <button>Course is deleted; the repository replaces it</button>
+    <button data-ok="1">Course keeps its data and rules; only loading and saving move to the repository</button>
+    <button>Course becomes a boundary class</button>
+  </div>
+  <p class="quiz-why">Refinement redistributes persistence work, never domain behavior. Course still knows its prerequisites and capacity; the DAO only fetches and stores it.</p>
+</div>
+
+<h2>Now draw on paper</h2>
+<p>Set a 6-minute timer. For <strong>Borrow Book</strong> (your Lesson 2 specification),
+list the analysis classes with one-line responsibilities, then draw the realization.
+Then refine: which DAO/repository classes appear in design?</p>
+
+<details id="model-answer">
+  <summary>Open the model answer</summary>
+  <table>
+    <tr><th>Class</th><th>Stereotype</th><th>Responsibility</th></tr>
+    <tr><td>KioskUI</td><td>«boundary»</td><td>Read card and book scans; show due date, reasons, limits.</td></tr>
+    <tr><td>LoanController</td><td>«control»</td><td>Run the borrow flow: verify membership [BR-1], check the loan limit [BR-2], create the loan, loop for more books.</td></tr>
+    <tr><td>Member</td><td>«entity»</td><td>Membership status and expiry; current loan count.</td></tr>
+    <tr><td>Book</td><td>«entity»</td><td>Identity and loanability of the copy.</td></tr>
+    <tr><td>Loan</td><td>«entity»</td><td>The loan record; computes the due date from BR-3 (21 days).</td></tr>
+  </table>
+  <div class="grid-panel">
+<pre class="mermaid">
+flowchart LR
+  ME(["🧍 Member"]):::actor
+  U["«boundary»
+KioskUI"]
+  C["«control»
+LoanController"]
+  M["«entity»
+Member"]
+  B["«entity»
+Book"]
+  L["«entity»
+Loan"]
+  ME --- U
+  U --- C
+  C --- M
+  C --- B
+  C --- L
+  classDef actor fill:none;
+</pre>
+  </div>
+  <p><strong>Design refinement:</strong> KioskUI stays the UI class; LoanController keeps
+  the flow; <code>MemberRepository</code>, <code>BookRepository</code>, and
+  <code>LoanRepository</code> («DAO») take over loading and saving. BR-1 and BR-2 are
+  still checked by the controller with Member's data; BR-3 still lives on Loan.</p>
+  <h3>Grade yourself</h3>
+  <ul class="checklist">
+    <li>Exactly one boundary and one control, named after the interaction and the use case.</li>
+    <li>Three entities: Member, Book, Loan — no Kiosk, Screen, or Scanner entity.</li>
+    <li>Every specification step has an owner in your responsibility list.</li>
+    <li>Boundary links only to the control; control links to the entities.</li>
+    <li>Refinement adds repositories without deleting any rule check.</li>
+  </ul>
+  <p>Score 4–5: say "next" for Lesson 4. Score ≤ 3: redo moves 4 and 5 with the
+  responsibility questions in front of you.</p>
+</details>
+
+<footer>
+  <p>Stuck? Ask your teacher in the Claude Code session — for example:
+  <span class="hand">"where does the waitlist live — Course or a Waitlist entity?"</span></p>
+  <p>Next: <strong>Lesson 4 — sequence diagrams</strong>: these five classes become
+  lifelines, and every spec step becomes a message.
+  Reference: <a href="../reference/part-a-cheatsheet.html">Part A cheat sheet</a>.</p>
+</footer>
+
+</div>
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({
+    startOnLoad: true,
+    look: "handDrawn",
+    theme: "neutral",
+    themeVariables: {
+      fontFamily: "Kalam, cursive",
+      background: "transparent",
+      primaryColor: "#faf7ef",
+      primaryBorderColor: "#3a3630",
+      primaryTextColor: "#3a3630",
+      lineColor: "#3a4a7a",
+      clusterBkg: "transparent",
+      clusterBorder: "#3a3630"
+    }
+  });
+
+  const details = document.getElementById("model-answer");
+  details.addEventListener("toggle", () => {
+    if (details.open) mermaid.run({ querySelector: "#model-answer .mermaid:not([data-processed])" });
+  });
+
+  document.querySelectorAll(".quiz-q").forEach(q => {
+    q.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (q.classList.contains("answered")) return;
+        q.classList.add("answered");
+        btn.classList.add(btn.dataset.ok ? "correct" : "wrong");
+        if (!btn.dataset.ok) q.querySelector("[data-ok]").classList.add("correct");
+      });
+    });
+  });
+</script>
+</body>
+</html>

@@ -9,7 +9,7 @@
 ## Teaching plan (professor's order)
 1. 0001 — Use-case diagrams (actors, boundary, «include», «extend») ✅ built
 2. 0002 — Use-case specification (name, goal, flows, business rules) ✅ built
-3. 0003 — Use-case realization: boundary / control / entity classes
+3. 0003 — Use-case realization: boundary / control / entity classes ✅ built
 4. 0004 — Sequence diagrams (lifelines, activations, DAO/repository, alt/opt)
 5. 0005 — Collaboration diagrams (links, numbered messages, nesting)
 6. 0006 — VOPC diagrams (deriving operations from messages)

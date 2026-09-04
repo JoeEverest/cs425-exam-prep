@@ -15,7 +15,7 @@
 6. 0006 — VOPC diagrams (deriving operations from messages) ✅ built
    (cheat sheet updated in the same commit: BR-1 check moved from a controller
    self-message to Course.checkPrerequisites, so all artifacts tell one story)
-7. 0007 — Subsystem design (façade, service, DAO, repository)
+7. 0007 — Subsystem design (façade, service, DAO, repository) ✅ built
 8. Final — full mock question under a 40-minute timer; the consistency check
 
 ## Running example

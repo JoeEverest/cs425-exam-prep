@@ -17,8 +17,16 @@
    self-message to Course.checkPrerequisites, so all artifacts tell one story)
 7. 0007 — Subsystem design (façade, service, DAO, repository) ✅ built
 8. 0008 — Timed mock (MediBook clinic scenario, 7 tasks, 40 marks) ✅ built
-   All eight lessons are complete. Next sessions: grade mock results, redo weak
-   topics, and ask the user for a past paper (see RESOURCES.md gap).
+9. 0009 — Real practice paper walkthrough (official sample exam) ✅ built
+
+## Real exam intel (from the official sample paper; see learning record 0001)
+- Part A: 45 min, 30 marks. Q1 use-case diagram (8), Q2 design-level sequence
+  (12), Q3 VOPC (10). No spec/collaboration/subsystem questions in the sample.
+- Q2 splits controller and service, and draws an explicit Database lifeline.
+- Part B (2 h, 70 marks) implements the same use case; VOPC attributes should
+  match Part B's required fields.
+- The professor's PDF stays local (~/Downloads/CS425_Practice_Question.pdf);
+  do not commit it to the public repo.
 
 ## Running example
 One scenario carries through every lesson so the artifacts stay consistent

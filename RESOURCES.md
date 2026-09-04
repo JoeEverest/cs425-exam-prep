@@ -33,7 +33,8 @@
   The highest-value community for an exam: past papers and the professor's
   marking habits. Use for: which alternative flows the professor likes to test.
 
-## Gaps
-
-- No past exam papers are in this workspace yet. If the user can supply one,
-  add it here; it is the best possible practice material.
+- CS425 Sample Practice Examination (official; local file
+  `~/Downloads/CS425_Practice_Question.pdf`, kept out of the public repo)
+  The authoritative Part A format: 45 min, 30 marks — use-case diagram (8),
+  design-level sequence diagram (12), VOPC (10). Use for: question style, mark
+  weights, and the design-level participant list. Worked through in lesson 0009.

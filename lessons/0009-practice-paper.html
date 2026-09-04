@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 9 · The Real Practice Paper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@600;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: oklch(96.5% 0.013 92);
+    --panel: oklch(98.4% 0.008 95);
+    --ink: oklch(28% 0.02 75);
+    --ink-soft: oklch(45% 0.02 75);
+    --pen: oklch(43% 0.11 262);
+    --pen-soft: oklch(43% 0.11 262 / 0.12);
+    --pencil: oklch(60% 0.015 75);
+    --red: oklch(49% 0.16 27);
+    --red-soft: oklch(49% 0.16 27 / 0.08);
+    --ok: oklch(50% 0.1 150);
+    --ok-soft: oklch(50% 0.1 150 / 0.1);
+    --rule: oklch(88% 0.018 250);
+    --space-xs: 4px; --space-sm: 8px; --space-md: 16px;
+    --space-lg: 32px; --space-xl: 56px; --space-2xl: 96px;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Atkinson Hyperlegible", Verdana, sans-serif;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+  }
+  .sheet { max-width: 880px; margin: 0 auto; padding: var(--space-lg) var(--space-md) var(--space-2xl); }
+  h1, h2, h3 { font-family: Besley, Georgia, serif; line-height: 1.15; }
+  h1 { font-size: clamp(2rem, 5vw, 2.9rem); font-weight: 800; }
+  h2 { font-size: 1.55rem; font-weight: 700; margin-top: var(--space-xl); }
+  h3 { font-size: 1.15rem; font-weight: 700; margin-top: var(--space-lg); }
+  p, ul, ol { margin-top: var(--space-md); max-width: 68ch; }
+  li + li { margin-top: var(--space-xs); }
+  a { color: var(--pen); }
+  code { font-family: inherit; font-weight: 700; }
+  .hand { font-family: Kalam, "Comic Sans MS", cursive; color: var(--pen); }
+
+  header.lesson-head { padding-top: var(--space-md); }
+  .breadcrumb { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+  .lesson-meta { margin-top: var(--space-sm); color: var(--ink-soft); font-size: 0.95rem; }
+  .headrule { border: 0; border-top: 2px solid var(--ink); margin-top: var(--space-md); }
+  .headrule + .headrule { border-top-width: 1px; margin-top: 3px; }
+
+  .mission-note { margin-top: var(--space-lg); background: var(--pen-soft); padding: var(--space-md) var(--space-lg); max-width: none; }
+  .mission-note p { margin-top: var(--space-xs); }
+
+  .grid-panel {
+    margin-top: var(--space-md);
+    background:
+      repeating-linear-gradient(to right, var(--rule) 0 1px, transparent 1px 24px),
+      repeating-linear-gradient(to bottom, var(--rule) 0 1px, transparent 1px 24px),
+      var(--panel);
+    border: 1px solid var(--rule);
+    padding: var(--space-md);
+    overflow-x: auto;
+  }
+  .grid-panel .mermaid { display: flex; justify-content: center; }
+
+  table { border-collapse: collapse; margin-top: var(--space-md); width: 100%; }
+  th, td { border: 1px solid var(--rule); padding: var(--space-sm) var(--space-md); text-align: left; vertical-align: top; }
+  th { font-family: Besley, Georgia, serif; font-size: 0.95rem; background: var(--panel); }
+
+  .warn { margin-top: var(--space-lg); background: var(--red-soft); padding: var(--space-md) var(--space-lg); max-width: none; }
+  .warn h3 { color: var(--red); margin-top: 0; }
+  .warn strong { color: var(--red); }
+
+  .timerbox {
+    margin-top: var(--space-lg); display: flex; align-items: baseline; gap: var(--space-lg);
+    border: 2px solid var(--ink); padding: var(--space-md) var(--space-lg);
+    background: var(--panel); max-width: none;
+  }
+  #clock { font-family: Besley, Georgia, serif; font-weight: 800; font-size: 2.6rem; }
+  .timerbox.done { border-color: var(--red); }
+  .timerbox.done #clock { color: var(--red); }
+  .timerbox button {
+    font: inherit; font-weight: 700; cursor: pointer;
+    background: var(--pen); color: var(--panel); border: none;
+    padding: var(--space-sm) var(--space-lg);
+  }
+  .timerbox button:hover { opacity: 0.9; }
+  .timerbox .note { color: var(--ink-soft); font-size: 0.9rem; }
+
+  .task { margin-top: var(--space-xl); border-top: 1px solid var(--rule); padding-top: var(--space-md); }
+  .task h3 { display: flex; justify-content: space-between; gap: var(--space-md); margin-top: 0; max-width: 68ch; }
+  .task h3 .meta { font-family: Kalam, cursive; font-weight: 400; color: var(--pencil); font-size: 1rem; white-space: nowrap; }
+
+  details { margin-top: var(--space-md); }
+  summary { cursor: pointer; font-family: Besley, Georgia, serif; font-weight: 700; font-size: 1.05rem; color: var(--pen); }
+  .checklist { list-style: none; padding-left: 0; }
+  .checklist li::before { content: "☐ "; color: var(--pen); }
+
+  footer { margin-top: var(--space-2xl); border-top: 2px solid var(--ink); padding-top: var(--space-md); color: var(--ink-soft); font-size: 0.95rem; }
+
+  @media print {
+    body { background: white; font-size: 10.5pt; }
+    .sheet { max-width: none; padding: 0; }
+    .task, .grid-panel, table { break-inside: avoid; }
+    .timerbox { display: none; }
+    a { color: var(--ink); text-decoration: none; }
+    details { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<header class="lesson-head">
+  <p class="breadcrumb">CS425 · Part A · Lesson 9 — the real practice paper</p>
+  <h1>The Real Practice Paper</h1>
+  <p class="lesson-meta">45 minutes · 30 marks · paper only ·
+    <a href="../reference/part-a-cheatsheet.html">cheat sheet</a> ·
+    <a href="0008-timed-mock.html">← Lesson 8</a></p>
+  <hr class="headrule"><hr class="headrule">
+</header>
+
+<div class="mission-note">
+  <p><strong>What this is.</strong> A timed walkthrough of the official CS425 sample
+  practice examination, Part A: the Campus Equipment Reservation System. Work from the
+  professor's PDF; this page restates the tasks briefly, holds the timer, and hides the
+  model answers until you finish.</p>
+</div>
+
+<h2>What the real paper changes</h2>
+<p>The sample paper sharpens three things the earlier lessons must adjust to:</p>
+<table>
+  <tr><th>Lessons 1–8 taught</th><th>The real paper wants</th></tr>
+  <tr><td>One «control» class per use case.</td><td><strong>Controller and service split:</strong> a
+    controller/request-handler (API) that receives the call, and a service that owns the
+    business logic.</td></tr>
+  <tr><td>The DAO is the last participant.</td><td><strong>An explicit Database lifeline</strong> after the
+    repositories. Draw it; show the query and its return.</td></tr>
+  <tr><td>Analysis-level names.</td><td><strong>Design-level names:</strong> boundary/API,
+    controller/request-handler, service/business-logic, repository/data-access,
+    entity/model, database.</td></tr>
+</table>
+<p>Also note the shape: Part A is three questions, 30 marks — use-case diagram 8,
+sequence 12, VOPC 10. The interaction diagrams carry 22 of 30 marks. No specification
+writing, no collaboration diagram, no subsystem prose in this sample — but the prep
+guide still lists them, so keep those skills warm.</p>
+<p class="margin-note hand">Part B implements exactly what you draw here. Give your
+VOPC entities the fields Part B requires: IDs, name, category, dates, status.</p>
+
+<div class="timerbox">
+  <span id="clock">45:00</span>
+  <button id="startbtn">Start the exam</button>
+  <span class="note">Suggested split: Q1 ≈ 10 min · Q2 ≈ 20 min · Q3 ≈ 12 min · sweep ≈ 3 min.</span>
+</div>
+
+<section class="task">
+  <h3>Q1 · System use-case diagram <span class="meta">10 min · 8 marks</span></h3>
+  <p>The whole system: Student and Equipment Staff; View Available Equipment, Reserve
+  Equipment, Return Equipment, Cancel Reservation, Manage Equipment. Suitable
+  associations and any appropriate «include»/«extend».</p>
+  <details class="ma">
+    <summary>Model answer Q1</summary>
+    <div class="grid-panel">
+<pre class="mermaid">
+flowchart LR
+  ST(["🧍 Student"]):::actor
+  SF(["🧍 Equipment Staff"]):::actor
+  subgraph SYS["Campus Equipment Reservation System"]
+    V(["View Available Equipment"])
+    R(["Reserve Equipment"])
+    T(["Return Equipment"])
+    C(["Cancel Reservation"])
+    M(["Manage Equipment"])
+    R -. "«include»" .-> V
+  end
+  ST --- V
+  ST --- R
+  ST --- T
+  ST --- C
+  SF --- T
+  SF --- M
+  classDef actor fill:none;
+</pre>
+    </div>
+    <p><strong>Why the «include»:</strong> steps 1–2 of the given Reserve Equipment flow
+    are exactly the View Available Equipment use case, run every time. "Always happens
+    as part of" = «include». <strong>Why no «extend»:</strong> nothing in the scenario is
+    optional-with-a-condition. A forced «extend» costs more than an omitted one.
+    "If cancellation is allowed" is a business rule inside Cancel Reservation, not a
+    relationship.</p>
+    <ul class="checklist">
+      <li>1 · Both actors outside the boundary.</li>
+      <li>2 · All five use cases, verb + noun, inside the named boundary.</li>
+      <li>3 · Associations right — including <strong>two actors on Return Equipment</strong> (the flow says "Student or Equipment Staff").</li>
+      <li>1 · A justified «include» from Reserve → View, arrow pointing at the included use case.</li>
+      <li>1 · No invented relationships; clean notation (no arrowheads on associations).</li>
+    </ul>
+  </details>
+</section>
+
+<section class="task">
+  <h3>Q2 · Design-level sequence diagram — Reserve Equipment <span class="meta">20 min · 12 marks</span></h3>
+  <p>Main flow plus the important alternative flows (equipment does not exist,
+  equipment unavailable, invalid dates). Participants: actor, boundary/API,
+  controller/request-handler, service, repositories, entities, database.</p>
+  <details class="ma">
+    <summary>Model answer Q2</summary>
+    <div class="grid-panel">
+<pre class="mermaid">
+sequenceDiagram
+  actor S as Student
+  participant A as «controller/API» :ReservationController
+  participant V as «service» :ReservationService
+  participant ER as «repository» :EquipmentRepository
+  participant RR as «repository» :ReservationRepository
+  participant EQ as «entity» :Equipment
+  participant DB as Database
+  note over S,V: steps 1–2 - the View Available Equipment «include» runs first
+  S->>+A: reserveEquipment(equipmentId, reservationDate, returnDate)
+  A->>+V: reserve(studentId, equipmentId, dates)
+  V->>V: validateDates(reservationDate, returnDate)
+  V->>+ER: findById(equipmentId)
+  ER->>+DB: select equipment
+  DB-->>-ER: row / empty
+  ER-->>-V: equipment / not found
+  alt dates valid, equipment found and available
+    V->>+EQ: isAvailable()
+    EQ-->>-V: available
+    V->>+RR: save(new Reservation with status ACTIVE)
+    RR->>+DB: insert reservation
+    DB-->>-RR: ok
+    RR-->>-V: reservation
+    V->>+EQ: markUnavailable()
+    EQ-->>-V: updated
+    V->>+ER: save(equipment)
+    ER->>+DB: update availability
+    DB-->>-ER: ok
+    ER-->>-V: saved
+    V-->>A: confirmation with reservation details
+  else invalid dates - return date before reservation date
+    V-->>A: validation error
+  else equipment does not exist
+    V-->>A: not-found error
+  else equipment unavailable
+    V-->>A: unavailable error
+  end
+  deactivate V
+  A-->>-S: response
+</pre>
+    </div>
+    <p><strong>Layer discipline:</strong> the controller receives and responds — nothing
+    else. The service validates dates, coordinates the checks, creates the reservation,
+    and flips availability. Repositories translate to database operations. The entity
+    answers <code>isAvailable()</code> from its own status. One alt frame with an else
+    per alternative flow keeps all three failures visible without three diagrams.</p>
+    <ul class="checklist">
+      <li>2 · All seven participants present, in call order, database included.</li>
+      <li>2 · Controller thin; business logic in the service only.</li>
+      <li>2 · Activations opened and closed; dashed returns everywhere, back to the actor.</li>
+      <li>2 · All three alternative flows shown with clear outcomes.</li>
+      <li>2 · Both writes drawn: insert reservation AND update equipment availability.</li>
+      <li>1 · Availability answered by the Equipment entity, not computed by the controller.</li>
+      <li>1 · Every message traces to a numbered step of the given flow.</li>
+    </ul>
+  </details>
+</section>
+
+<section class="task">
+  <h3>Q3 · VOPC diagram — Reserve Equipment <span class="meta">12 min · 10 marks</span></h3>
+  <p>Classes, key responsibilities/operations, relationships, stereotypes or
+  architectural roles.</p>
+  <details class="ma">
+    <summary>Model answer Q3</summary>
+    <div class="grid-panel">
+<pre class="mermaid">
+classDiagram
+  class ReservationController["«controller/API» ReservationController"]
+  ReservationController : +reserveEquipment(equipmentId, dates)
+  class ReservationService["«service» ReservationService"]
+  ReservationService : +reserve(studentId, equipmentId, dates)
+  ReservationService : -validateDates(dates)
+  class EquipmentRepository["«repository» EquipmentRepository"]
+  EquipmentRepository : +findById(equipmentId) Equipment
+  EquipmentRepository : +findAvailable() List
+  EquipmentRepository : +save(equipment)
+  class ReservationRepository["«repository» ReservationRepository"]
+  ReservationRepository : +save(reservation)
+  class Equipment["«entity» Equipment"]
+  Equipment : -equipmentId
+  Equipment : -name
+  Equipment : -category
+  Equipment : -availabilityStatus
+  Equipment : +isAvailable() bool
+  Equipment : +markUnavailable()
+  class Reservation["«entity» Reservation"]
+  Reservation : -reservationId
+  Reservation : -studentId
+  Reservation : -reservationDate
+  Reservation : -returnDate
+  Reservation : -status
+  ReservationController ..> ReservationService : uses
+  ReservationService ..> EquipmentRepository : uses
+  ReservationService ..> ReservationRepository : uses
+  ReservationService ..> Equipment : uses
+  ReservationService ..> Reservation : creates
+  Equipment "1" -- "0..*" Reservation
+</pre>
+    </div>
+    <p><strong>The Part B tie-in:</strong> the entity attributes are exactly the fields
+    Part B demands — Equipment: ID, name, category, availability status; Reservation:
+    ID, student ID, both dates, status, and the relationship to Equipment. Drawing them
+    here means Part B is a transcription, not a design session.</p>
+    <ul class="checklist">
+      <li>2 · Six classes with design-level stereotypes; class names, no colons.</li>
+      <li>3 · Every Q2 message is an operation on its receiver — validateDates private on the service, both entity operations present; no orphans.</li>
+      <li>2 · Entity attributes match the Part B field lists.</li>
+      <li>2 · Dashed «uses»/«creates» along the call chain; no controller–entity or controller–repository shortcut.</li>
+      <li>1 · Equipment "1" — "0..*" Reservation with multiplicities.</li>
+    </ul>
+  </details>
+</section>
+
+<h2>Score and next step</h2>
+<table>
+  <tr><th>Score</th><th>Verdict</th><th>Do this</th></tr>
+  <tr><td>24–30</td><td>Exam-ready</td><td>Reread the cheat sheet the morning of the exam. Consider a dry run of Part B against your Q3.</td></tr>
+  <tr><td>18–23</td><td>Close</td><td>Redraw only Q2 tomorrow with the layer table in front of you — it holds 12 marks.</td></tr>
+  <tr><td>&lt; 18</td><td>Not yet</td><td>Redo Lessons 4 and 6, then retake this paper.</td></tr>
+</table>
+
+<div class="warn">
+  <h3>The traps in this specific paper</h3>
+  <ul>
+    <li><strong>Return Equipment has two actors.</strong> The flow says "Student or Equipment Staff" — both get association lines.</li>
+    <li><strong>Two writes, not one.</strong> Reserving creates the reservation AND updates equipment availability. Miss the second write and Q2 and Q3 both leak marks.</li>
+    <li><strong>The controller is not the service.</strong> One receives, one decides. Merging them loses the architecture marks the question explicitly names.</li>
+    <li><strong>Q1 is the whole system.</strong> The detailed flow belongs to Q2/Q3 only; the use-case diagram must show all five use cases.</li>
+  </ul>
+</div>
+
+<footer>
+  <p>Report your three scores (Q1/Q2/Q3) to your teacher in the Claude Code session.
+  Weak on Q2? Say <span class="hand">"drill Q2"</span> and a fresh design-level sequence
+  exercise will follow.</p>
+  <p>Course map: <a href="../index.html">all lessons</a> ·
+  <a href="../reference/part-a-cheatsheet.html">Part A cheat sheet</a>.</p>
+</footer>
+
+</div>
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({
+    startOnLoad: true,
+    look: "handDrawn",
+    theme: "neutral",
+    themeVariables: {
+      fontFamily: "Kalam, cursive",
+      background: "transparent",
+      primaryColor: "#faf7ef",
+      primaryBorderColor: "#3a3630",
+      primaryTextColor: "#3a3630",
+      lineColor: "#3a4a7a",
+      clusterBkg: "transparent",
+      clusterBorder: "#3a3630"
+    }
+  });
+
+  document.querySelectorAll("details.ma").forEach(d => {
+    d.addEventListener("toggle", () => {
+      if (d.open) mermaid.run({ querySelector: "details.ma[open] .mermaid:not([data-processed])" });
+    });
+  });
+
+  const clock = document.getElementById("clock");
+  const btn = document.getElementById("startbtn");
+  const box = document.querySelector(".timerbox");
+  let remaining = 45 * 60, ticking = null;
+  btn.addEventListener("click", () => {
+    if (ticking) { clearInterval(ticking); ticking = null; btn.textContent = "Resume"; return; }
+    btn.textContent = "Pause";
+    ticking = setInterval(() => {
+      remaining--;
+      const m = String(Math.floor(Math.max(remaining, 0) / 60)).padStart(2, "0");
+      const s = String(Math.max(remaining, 0) % 60).padStart(2, "0");
+      clock.textContent = m + ":" + s;
+      if (remaining <= 0) { clearInterval(ticking); ticking = null; box.classList.add("done"); btn.textContent = "Time is up — grade now"; }
+    }, 1000);
+  });
+</script>
+</body>
+</html>

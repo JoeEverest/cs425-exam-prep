@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 4 · Draw a Sequence Diagram</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@600;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: oklch(96.5% 0.013 92);
+    --panel: oklch(98.4% 0.008 95);
+    --ink: oklch(28% 0.02 75);
+    --ink-soft: oklch(45% 0.02 75);
+    --pen: oklch(43% 0.11 262);
+    --pen-soft: oklch(43% 0.11 262 / 0.12);
+    --pencil: oklch(60% 0.015 75);
+    --red: oklch(49% 0.16 27);
+    --red-soft: oklch(49% 0.16 27 / 0.08);
+    --ok: oklch(50% 0.1 150);
+    --ok-soft: oklch(50% 0.1 150 / 0.1);
+    --rule: oklch(88% 0.018 250);
+    --space-xs: 4px; --space-sm: 8px; --space-md: 16px;
+    --space-lg: 32px; --space-xl: 56px; --space-2xl: 96px;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Atkinson Hyperlegible", Verdana, sans-serif;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+  }
+  .sheet { max-width: 880px; margin: 0 auto; padding: var(--space-lg) var(--space-md) var(--space-2xl); }
+  h1, h2, h3 { font-family: Besley, Georgia, serif; line-height: 1.15; }
+  h1 { font-size: clamp(2rem, 5vw, 2.9rem); font-weight: 800; }
+  h2 { font-size: 1.55rem; font-weight: 700; margin-top: var(--space-xl); }
+  h3 { font-size: 1.15rem; font-weight: 700; margin-top: var(--space-lg); }
+  p, ul, ol { margin-top: var(--space-md); max-width: 68ch; }
+  li + li { margin-top: var(--space-xs); }
+  a { color: var(--pen); }
+  code { font-family: inherit; font-weight: 700; }
+  .hand { font-family: Kalam, "Comic Sans MS", cursive; color: var(--pen); }
+
+  header.lesson-head { padding-top: var(--space-md); }
+  .breadcrumb { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+  .lesson-meta { margin-top: var(--space-sm); color: var(--ink-soft); font-size: 0.95rem; }
+  .headrule { border: 0; border-top: 2px solid var(--ink); margin-top: var(--space-md); }
+  .headrule + .headrule { border-top-width: 1px; margin-top: 3px; }
+
+  .mission-note { margin-top: var(--space-lg); background: var(--pen-soft); padding: var(--space-md) var(--space-lg); max-width: none; }
+  .mission-note p { margin-top: var(--space-xs); }
+
+  .grid-panel {
+    margin-top: var(--space-md);
+    background:
+      repeating-linear-gradient(to right, var(--rule) 0 1px, transparent 1px 24px),
+      repeating-linear-gradient(to bottom, var(--rule) 0 1px, transparent 1px 24px),
+      var(--panel);
+    border: 1px solid var(--rule);
+    padding: var(--space-md);
+    overflow-x: auto;
+  }
+  .grid-panel .mermaid { display: flex; justify-content: center; }
+
+  .step { display: grid; grid-template-columns: 72px 1fr; gap: 0 var(--space-md); margin-top: var(--space-xl); }
+  .step-num { font-family: Besley, Georgia, serif; font-weight: 800; font-size: 3rem; color: var(--pencil); line-height: 1; }
+  .step h3 { margin-top: 0; }
+  .step .grid-panel, .step p, .step ul, .step table { grid-column: 2; }
+  .step > p { margin-top: var(--space-sm); }
+  .margin-note { font-family: Kalam, cursive; color: var(--pen); font-size: 1rem; margin-top: var(--space-sm); }
+
+  table { border-collapse: collapse; margin-top: var(--space-md); width: 100%; }
+  th, td { border: 1px solid var(--rule); padding: var(--space-sm) var(--space-md); text-align: left; vertical-align: top; }
+  th { font-family: Besley, Georgia, serif; font-size: 0.95rem; background: var(--panel); }
+
+  .warn { margin-top: var(--space-lg); background: var(--red-soft); padding: var(--space-md) var(--space-lg); max-width: none; }
+  .warn h3 { color: var(--red); margin-top: 0; }
+  .warn strong { color: var(--red); }
+
+  .quiz-q { margin-top: var(--space-lg); }
+  .quiz-q p.q { font-weight: 700; }
+  .quiz-opts { display: flex; flex-direction: column; gap: var(--space-sm); margin-top: var(--space-sm); max-width: 60ch; }
+  .quiz-opts button {
+    font: inherit; text-align: left; cursor: pointer;
+    background: var(--panel); color: var(--ink);
+    border: 1px solid var(--pencil); padding: var(--space-sm) var(--space-md);
+  }
+  .quiz-opts button:hover { border-color: var(--pen); }
+  .quiz-opts button.correct { background: var(--ok-soft); border-color: var(--ok); }
+  .quiz-opts button.wrong { background: var(--red-soft); border-color: var(--red); }
+  .quiz-why { display: none; margin-top: var(--space-sm); font-size: 0.98rem; color: var(--ink-soft); max-width: 60ch; }
+  .quiz-q.answered .quiz-why { display: block; }
+
+  details { margin-top: var(--space-lg); }
+  summary { cursor: pointer; font-family: Besley, Georgia, serif; font-weight: 700; font-size: 1.1rem; color: var(--pen); }
+  .checklist { list-style: none; padding-left: 0; }
+  .checklist li::before { content: "☐ "; color: var(--pen); }
+
+  footer { margin-top: var(--space-2xl); border-top: 2px solid var(--ink); padding-top: var(--space-md); color: var(--ink-soft); font-size: 0.95rem; }
+
+  @media print {
+    body { background: white; font-size: 10.5pt; }
+    .sheet { max-width: none; padding: 0; }
+    .step, .grid-panel, .quiz-q, table { break-inside: avoid; }
+    a { color: var(--ink); text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<header class="lesson-head">
+  <p class="breadcrumb">CS425 · Part A · Lesson 4 of 8</p>
+  <h1>Draw a Sequence Diagram</h1>
+  <p class="lesson-meta">≈ 30 minutes · pen and paper required at the end ·
+    <a href="../reference/part-a-cheatsheet.html">cheat sheet</a> ·
+    <a href="0003-analysis-classes.html">← Lesson 3</a></p>
+  <hr class="headrule"><hr class="headrule">
+</header>
+
+<div class="mission-note">
+  <p><strong>Why this lesson.</strong> The sequence diagram is where the consistency
+  check bites hardest: every message must come from a specification step, and every
+  receiver must be a class from your realization. You already built both inputs.</p>
+</div>
+
+<h2>What the exam asks</h2>
+<ul>
+  <li>Show actors, lifelines, activation bars, messages, return messages, and the correct order.</li>
+  <li>Include architectural participants: boundary/controller, control/service, repository/DAO, entities.</li>
+  <li>Show business-rule validation and explain where each check belongs.</li>
+  <li>Simple rule → one clear conditional message. Complex alternative flow → a separate sequence diagram.</li>
+  <li>Stay consistent with the use-case flow and the class responsibilities.</li>
+</ul>
+
+<h2>The notation, piece by piece</h2>
+<table>
+  <tr><th>Element</th><th>On paper, draw…</th><th>Rule</th></tr>
+  <tr><td><strong>Participant</strong></td><td>A box at the top, named <code>:EnrollmentForm</code> (colon = an object, not the class). The actor is a stick figure.</td><td>Order left → right: actor · boundary · control · DAO · entity.</td></tr>
+  <tr><td><strong>Lifeline</strong></td><td>A dashed vertical line falling from each box.</td><td>Time flows downward. Never draw a message that goes up.</td></tr>
+  <tr><td><strong>Activation bar</strong></td><td>A thin rectangle on the lifeline.</td><td>Starts when the object receives a call; ends when it returns.</td></tr>
+  <tr><td><strong>Message</strong></td><td>A solid arrow with a filled head, labeled <code>verb(args)</code>.</td><td>The label becomes an operation of the <em>receiver</em> (Lesson 6).</td></tr>
+  <tr><td><strong>Return</strong></td><td>A dashed arrow back, labeled with the result.</td><td>Every call that yields a value returns. Close what you open.</td></tr>
+  <tr><td><strong>Self-message</strong></td><td>A small arrow that loops back to the same lifeline.</td><td>Use it when an object runs its own check.</td></tr>
+  <tr><td><strong>Guard</strong></td><td><code>[seats free]</code> before a message label.</td><td>A simple condition on one message.</td></tr>
+  <tr><td><strong>alt / opt frame</strong></td><td>A rectangle around the branch, label <code>alt</code> with a divider, or <code>opt</code> for a single optional part.</td><td>Use for a branch of a few messages. Bigger than that → separate diagram.</td></tr>
+</table>
+
+<h2>Build one in six moves</h2>
+<p>Input: the <strong>Enroll in Course</strong> specification (Lesson 2) and the
+realization classes (Lesson 3). We draw the main flow plus the BR-1 branch.</p>
+
+<section class="step">
+  <div class="step-num">1</div>
+  <div>
+    <h3>Line up the participants</h3>
+    <p>Write the actor first, then the classes from your realization, in call order:
+    boundary, control, DAO, entities. Drop the lifelines. A good line-up earns marks
+    before a single message exists.</p>
+  </div>
+  <div class="grid-panel">
+<pre class="mermaid">
+sequenceDiagram
+  actor S as Student
+  participant F as «boundary» :EnrollmentForm
+  participant C as «control» :EnrollmentController
+  participant R as «DAO» :CourseRepository
+  participant K as «entity» :Course
+  participant E as «entity» :Enrollment
+</pre>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-num">2</div>
+  <div>
+    <h3>Start with the trigger</h3>
+    <p>Spec trigger: the student submits an enrollment request. Draw a solid arrow from
+    the actor to the boundary and start the boundary's activation bar.</p>
+  </div>
+  <div class="grid-panel">
+<pre class="mermaid">
+sequenceDiagram
+  actor S as Student
+  participant F as «boundary» :EnrollmentForm
+  S->>+F: submitEnrollment(courseId)
+  note over F: the activation bar stays open until the final return
+  deactivate F
+</pre>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-num">3</div>
+  <div>
+    <h3>The boundary delegates — one message, no logic</h3>
+    <p>The form immediately hands the request to the control. That single message is the
+    whole job of the boundary until the result comes back.</p>
+    <p class="margin-note">If your form sends more than one business message, logic
+    leaked into the boundary. Red pen territory.</p>
+  </div>
+  <div class="grid-panel">
+<pre class="mermaid">
+sequenceDiagram
+  actor S as Student
+  participant F as «boundary» :EnrollmentForm
+  participant C as «control» :EnrollmentController
+  S->>+F: submitEnrollment(courseId)
+  F->>+C: enroll(studentId, courseId)
+  deactivate C
+  deactivate F
+</pre>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-num">4</div>
+  <div>
+    <h3>The control fetches data through the DAO</h3>
+    <p>The controller needs the course to run any check. It asks the repository, and the
+    repository returns the entity. Draw the return as a dashed arrow — and close the
+    DAO's activation bar with it.</p>
+  </div>
+  <div class="grid-panel">
+<pre class="mermaid">
+sequenceDiagram
+  actor S as Student
+  participant C as «control» :EnrollmentController
+  participant R as «DAO» :CourseRepository
+  activate C
+  C->>+R: findCourse(courseId)
+  R-->>-C: course
+  deactivate C
+</pre>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-num">5</div>
+  <div>
+    <h3>Place the business-rule checks where they belong</h3>
+    <p>Spec step 2 checks BR-1. The control coordinates; the entity answers from its own
+    data. So: the controller sends <code>checkPrerequisites(student)</code> to the Course
+    entity, and the entity returns the verdict. A rule about one object's own data can
+    also be a self-message on that object.</p>
+    <table>
+      <tr><th>Check</th><th>Belongs on</th><th>Why</th></tr>
+      <tr><td>BR-1 prerequisites</td><td>Course (asked by the control)</td><td>Course owns its prerequisite list.</td></tr>
+      <tr><td>BR-2 seat availability</td><td>Course (asked by the control)</td><td>Course owns capacity and count.</td></tr>
+      <tr><td>Flow decision (reject / continue / waitlist)</td><td>EnrollmentController</td><td>The control owns the branching of the flow.</td></tr>
+    </table>
+  </div>
+  <div class="grid-panel">
+<pre class="mermaid">
+sequenceDiagram
+  participant C as «control» :EnrollmentController
+  participant K as «entity» :Course
+  activate C
+  C->>+K: checkPrerequisites(student)
+  K-->>-C: met / not met  [BR-1]
+  deactivate C
+</pre>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-num">6</div>
+  <div>
+    <h3>Branch, then return all the way back</h3>
+    <p>BR-1 has two outcomes, so wrap them in an <code>alt</code> frame. Inside the met
+    branch: check seats with a guard, create the enrollment, confirm. Then send every
+    return, from the deepest object back to the actor. The complete diagram:</p>
+  </div>
+  <div class="grid-panel">
+<pre class="mermaid">
+sequenceDiagram
+  actor S as Student
+  participant F as «boundary» :EnrollmentForm
+  participant C as «control» :EnrollmentController
+  participant R as «DAO» :CourseRepository
+  participant K as «entity» :Course
+  participant E as «entity» :Enrollment
+  S->>+F: submitEnrollment(courseId)
+  F->>+C: enroll(studentId, courseId)
+  C->>+R: findCourse(courseId)
+  R-->>-C: course
+  C->>+K: checkPrerequisites(student)
+  K-->>-C: met / not met  [BR-1]
+  alt prerequisites met
+    C->>+K: hasFreeSeat()
+    K-->>-C: seats free  [BR-2]
+    C->>+E: create(student, course)
+    E-->>-C: enrollment
+    C-->>F: confirmation
+  else prerequisites not met
+    C-->>F: rejection: missing prerequisite
+  end
+  deactivate C
+  F-->>-S: show result
+</pre>
+  </div>
+</section>
+
+<h2>Simple rule vs. complex flow</h2>
+<p>The guide draws a sharp line, and the exam tests it:</p>
+<ul>
+  <li><strong>Simple rule</strong> — one check, one branch point: a guard on the message
+      (<code>[seats free] create(...)</code>) or a small <code>alt</code> frame. Keep it
+      in the main diagram.</li>
+  <li><strong>Complex alternative flow</strong> — several checks and messages of its own:
+      give that flow its <em>own sequence diagram</em>, titled with the flow number.
+      The main diagram stays readable.</li>
+</ul>
+<p>Flow 3a (course full → waitlist) has its own steps, so it gets its own diagram:</p>
+<div class="grid-panel">
+<pre class="mermaid">
+sequenceDiagram
+  participant F as «boundary» :EnrollmentForm
+  participant C as «control» :EnrollmentController
+  participant K as «entity» :Course
+  note over F,K: Alternative flow 3a — the course is full
+  activate C
+  C-->>F: offer waitlist
+  F->>C: acceptWaitlist()
+  C->>+K: addToWaitlist(student)
+  K-->>-C: position
+  C-->>F: waitlisted at position
+  deactivate C
+</pre>
+  </div>
+
+<h2>The consistency check, made visible</h2>
+<table>
+  <tr><th>Spec step (Lesson 2)</th><th>Message here</th><th>Receiver (Lesson 3 class)</th></tr>
+  <tr><td>Trigger — student submits request</td><td>submitEnrollment(courseId)</td><td>:EnrollmentForm</td></tr>
+  <tr><td>2 · Verify prerequisites [BR-1]</td><td>checkPrerequisites(student)</td><td>:Course</td></tr>
+  <tr><td>3 · Check seat availability</td><td>hasFreeSeat()</td><td>:Course</td></tr>
+  <tr><td>4 · Record the enrollment</td><td>create(student, course)</td><td>:Enrollment</td></tr>
+  <tr><td>5 · Confirm</td><td>show result</td><td>Student (return)</td></tr>
+  <tr><td>3a · Waitlist</td><td>addToWaitlist(student)</td><td>:Course — separate diagram</td></tr>
+</table>
+<p class="margin-note">Grade your own diagram with this table: a spec step with no
+message, or a message with no step, is a lost mark.</p>
+
+<div class="warn">
+  <h3>Red-pen list: how students lose marks here</h3>
+  <ul>
+    <li><strong>Missing returns.</strong> A call that fetches data must return. Close every activation bar.</li>
+    <li><strong>Chatty boundary.</strong> The form sends one business message: enroll(...). It never calls a DAO or an entity.</li>
+    <li><strong>Wrong participant order.</strong> Actor · boundary · control · DAO · entity, left to right.</li>
+    <li><strong>Class names without colons.</strong> Lifelines are objects: <code>:Course</code>, not <code>Course</code>.</li>
+    <li><strong>Invented messages.</strong> Every message maps to a spec step. Extras break consistency.</li>
+    <li><strong>The mega-diagram.</strong> A complex alternative flow squeezed into nested alt frames. Split it out.</li>
+    <li><strong>Validation in the wrong place.</strong> The entity answers about its own data; the control decides the branch; the boundary shows the outcome.</li>
+  </ul>
+</div>
+
+<h2>Quick check</h2>
+
+<div class="quiz-q">
+  <p class="q">1 · Solid arrow with a filled head vs. dashed arrow — which is which?</p>
+  <div class="quiz-opts">
+    <button data-ok="1">Solid = a call/message; dashed = the return</button>
+    <button>Solid = success; dashed = failure</button>
+    <button>They are interchangeable</button>
+  </div>
+  <p class="quiz-why">Solid arrows carry operations; dashed arrows carry results back. Both are graded.</p>
+</div>
+
+<div class="quiz-q">
+  <p class="q">2 · Where does the BR-1 prerequisite verdict come from?</p>
+  <div class="quiz-opts">
+    <button>The EnrollmentForm computes it before calling the controller</button>
+    <button data-ok="1">The controller asks; the Course entity answers from its own prerequisite data</button>
+    <button>The CourseRepository decides while loading</button>
+  </div>
+  <p class="quiz-why">Same answer as Lesson 3, now drawn: control coordinates, entity owns the data rule, DAO only fetches.</p>
+</div>
+
+<div class="quiz-q">
+  <p class="q">3 · Flow 3a (waitlist) has four messages of its own. How do you show it?</p>
+  <div class="quiz-opts">
+    <button>Nest it inside a second alt frame in the main diagram</button>
+    <button data-ok="1">Draw a separate sequence diagram titled with the flow number, 3a</button>
+    <button>Leave it out — alternative flows are optional</button>
+  </div>
+  <p class="quiz-why">The guide's own rule: a simple rule gets a conditional message; a complex alternative flow gets its own diagram. Alternative flows must stay visible.</p>
+</div>
+
+<div class="quiz-q">
+  <p class="q">4 · Which participant order is correct, left to right?</p>
+  <div class="quiz-opts">
+    <button>:Course · :CourseRepository · :EnrollmentController · :EnrollmentForm · Student</button>
+    <button data-ok="1">Student · :EnrollmentForm · :EnrollmentController · :CourseRepository · :Course</button>
+    <button>Alphabetical order</button>
+  </div>
+  <p class="quiz-why">Follow the call chain: actor, boundary, control, DAO, entities. Messages then flow rightward and returns flow leftward.</p>
+</div>
+
+<div class="quiz-q">
+  <p class="q">5 · Your diagram has a message "logEnrollmentAttempt()" but the specification never mentions it. What does the grader see?</p>
+  <div class="quiz-opts">
+    <button>Extra effort — bonus marks</button>
+    <button data-ok="1">A consistency failure: a message with no specification step behind it</button>
+    <button>Nothing; only missing messages count</button>
+  </div>
+  <p class="quiz-why">The consistency check runs both directions: use-case steps become messages, and messages must trace back to steps.</p>
+</div>
+
+<h2>Now draw on paper</h2>
+<p>Set a 10-minute timer. Draw the sequence diagram for the <strong>Borrow Book</strong>
+main flow (Lesson 2 spec, Lesson 3 classes: KioskUI, LoanController, Member, Book,
+Loan — add MemberRepository as the DAO). Show BR-1 and BR-2 as checks in the right
+places, with the BR-1 failure in an alt frame. Decide: does flow 4a need its own
+diagram, or is a branch enough?</p>
+
+<details id="model-answer">
+  <summary>Open the model answer</summary>
+  <div class="grid-panel">
+<pre class="mermaid">
+sequenceDiagram
+  actor M as Member
+  participant U as «boundary» :KioskUI
+  participant C as «control» :LoanController
+  participant R as «DAO» :MemberRepository
+  participant B as «entity» :Member
+  participant L as «entity» :Loan
+  M->>+U: scanCard(cardId)
+  U->>+C: startBorrow(cardId)
+  C->>+R: findMember(cardId)
+  R-->>-C: member
+  C->>+B: isValid()
+  B-->>-C: valid / expired  [BR-1]
+  alt membership valid
+    M->>U: scanBook(bookId)
+    U->>C: borrow(bookId)
+    C->>+B: canTakeAnotherLoan()
+    B-->>-C: yes / limit reached  [BR-2]
+    C->>+L: create(member, book)  [BR-3: due in 21 days]
+    L-->>-C: loan with due date
+    C-->>U: due date
+  else membership invalid
+    C-->>U: rejection: invalid membership
+  end
+  deactivate C
+  U-->>-M: show result
+</pre>
+  </div>
+  <p><strong>Flow 4a (loan limit reached):</strong> one check, one refusal message — a
+  simple rule. A small <code>alt</code> around the create step is enough; no separate
+  diagram is needed. Flow 6a (more books) repeats steps 3–6; on paper, a
+  <code>loop</code> frame around the scan-and-create part, or a note "repeat for each
+  book", both score.</p>
+  <h3>Grade yourself</h3>
+  <ul class="checklist">
+    <li>Participant order: Member · :KioskUI · :LoanController · :MemberRepository · :Member · :Loan.</li>
+    <li>Activation bars on every participant that does work; every bar closed by a return.</li>
+    <li>KioskUI sends business messages only to the controller.</li>
+    <li>BR-1 answered by the Member entity; BR-2 by the Member entity; the branch decided by the controller.</li>
+    <li>BR-1 failure inside an alt frame; a final return reaches the actor in both branches.</li>
+    <li>Every message traces to a step of your Lesson 2 specification.</li>
+  </ul>
+  <p>Score 5–6: say "next" for Lesson 5. Score ≤ 4: redraw once with the consistency
+  table beside you.</p>
+</details>
+
+<footer>
+  <p>Stuck? Ask your teacher in the Claude Code session — for example:
+  <span class="hand">"who creates the Loan object — the controller or the repository?"</span></p>
+  <p>Next: <strong>Lesson 5 — collaboration diagrams</strong>: the same story, folded
+  into object links and numbered messages.
+  Reference: <a href="../reference/part-a-cheatsheet.html">Part A cheat sheet</a>.</p>
+</footer>
+
+</div>
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({
+    startOnLoad: true,
+    look: "handDrawn",
+    theme: "neutral",
+    themeVariables: {
+      fontFamily: "Kalam, cursive",
+      background: "transparent",
+      primaryColor: "#faf7ef",
+      primaryBorderColor: "#3a3630",
+      primaryTextColor: "#3a3630",
+      lineColor: "#3a4a7a",
+      clusterBkg: "transparent",
+      clusterBorder: "#3a3630"
+    }
+  });
+
+  const details = document.getElementById("model-answer");
+  details.addEventListener("toggle", () => {
+    if (details.open) mermaid.run({ querySelector: "#model-answer .mermaid:not([data-processed])" });
+  });
+
+  document.querySelectorAll(".quiz-q").forEach(q => {
+    q.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (q.classList.contains("answered")) return;
+        q.classList.add("answered");
+        btn.classList.add(btn.dataset.ok ? "correct" : "wrong");
+        if (!btn.dataset.ok) q.querySelector("[data-ok]").classList.add("correct");
+      });
+    });
+  });
+</script>
+</body>
+</html>

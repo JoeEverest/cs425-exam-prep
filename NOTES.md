@@ -16,7 +16,9 @@
    (cheat sheet updated in the same commit: BR-1 check moved from a controller
    self-message to Course.checkPrerequisites, so all artifacts tell one story)
 7. 0007 — Subsystem design (façade, service, DAO, repository) ✅ built
-8. Final — full mock question under a 40-minute timer; the consistency check
+8. 0008 — Timed mock (MediBook clinic scenario, 7 tasks, 40 marks) ✅ built
+   All eight lessons are complete. Next sessions: grade mock results, redo weak
+   topics, and ask the user for a past paper (see RESOURCES.md gap).
 
 ## Running example
 One scenario carries through every lesson so the artifacts stay consistent

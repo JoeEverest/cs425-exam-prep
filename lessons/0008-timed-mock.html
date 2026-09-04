@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 8 · Timed Mock — Full Part A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@600;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: oklch(96.5% 0.013 92);
+    --panel: oklch(98.4% 0.008 95);
+    --ink: oklch(28% 0.02 75);
+    --ink-soft: oklch(45% 0.02 75);
+    --pen: oklch(43% 0.11 262);
+    --pen-soft: oklch(43% 0.11 262 / 0.12);
+    --pencil: oklch(60% 0.015 75);
+    --red: oklch(49% 0.16 27);
+    --red-soft: oklch(49% 0.16 27 / 0.08);
+    --ok: oklch(50% 0.1 150);
+    --ok-soft: oklch(50% 0.1 150 / 0.1);
+    --rule: oklch(88% 0.018 250);
+    --space-xs: 4px; --space-sm: 8px; --space-md: 16px;
+    --space-lg: 32px; --space-xl: 56px; --space-2xl: 96px;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Atkinson Hyperlegible", Verdana, sans-serif;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+  }
+  .sheet { max-width: 880px; margin: 0 auto; padding: var(--space-lg) var(--space-md) var(--space-2xl); }
+  h1, h2, h3 { font-family: Besley, Georgia, serif; line-height: 1.15; }
+  h1 { font-size: clamp(2rem, 5vw, 2.9rem); font-weight: 800; }
+  h2 { font-size: 1.55rem; font-weight: 700; margin-top: var(--space-xl); }
+  h3 { font-size: 1.15rem; font-weight: 700; margin-top: var(--space-lg); }
+  p, ul, ol { margin-top: var(--space-md); max-width: 68ch; }
+  li + li { margin-top: var(--space-xs); }
+  a { color: var(--pen); }
+  code { font-family: inherit; font-weight: 700; }
+  .hand { font-family: Kalam, "Comic Sans MS", cursive; color: var(--pen); }
+
+  header.lesson-head { padding-top: var(--space-md); }
+  .breadcrumb { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+  .lesson-meta { margin-top: var(--space-sm); color: var(--ink-soft); font-size: 0.95rem; }
+  .headrule { border: 0; border-top: 2px solid var(--ink); margin-top: var(--space-md); }
+  .headrule + .headrule { border-top-width: 1px; margin-top: 3px; }
+
+  .mission-note { margin-top: var(--space-lg); background: var(--pen-soft); padding: var(--space-md) var(--space-lg); max-width: none; }
+  .mission-note p { margin-top: var(--space-xs); }
+
+  .grid-panel {
+    margin-top: var(--space-md);
+    background:
+      repeating-linear-gradient(to right, var(--rule) 0 1px, transparent 1px 24px),
+      repeating-linear-gradient(to bottom, var(--rule) 0 1px, transparent 1px 24px),
+      var(--panel);
+    border: 1px solid var(--rule);
+    padding: var(--space-md);
+    overflow-x: auto;
+  }
+  .grid-panel .mermaid { display: flex; justify-content: center; }
+
+  table { border-collapse: collapse; margin-top: var(--space-md); width: 100%; }
+  th, td { border: 1px solid var(--rule); padding: var(--space-sm) var(--space-md); text-align: left; vertical-align: top; }
+  th { font-family: Besley, Georgia, serif; font-size: 0.95rem; background: var(--panel); }
+
+  .warn { margin-top: var(--space-lg); background: var(--red-soft); padding: var(--space-md) var(--space-lg); max-width: none; }
+  .warn h3 { color: var(--red); margin-top: 0; }
+  .warn strong { color: var(--red); }
+
+  /* Timer */
+  .timerbox {
+    margin-top: var(--space-lg); display: flex; align-items: baseline; gap: var(--space-lg);
+    border: 2px solid var(--ink); padding: var(--space-md) var(--space-lg);
+    background: var(--panel); max-width: none;
+  }
+  #clock { font-family: Besley, Georgia, serif; font-weight: 800; font-size: 2.6rem; }
+  .timerbox.done { border-color: var(--red); }
+  .timerbox.done #clock { color: var(--red); }
+  .timerbox button {
+    font: inherit; font-weight: 700; cursor: pointer;
+    background: var(--pen); color: var(--panel); border: none;
+    padding: var(--space-sm) var(--space-lg);
+  }
+  .timerbox button:hover { opacity: 0.9; }
+  .timerbox .note { color: var(--ink-soft); font-size: 0.9rem; }
+
+  .task { margin-top: var(--space-xl); border-top: 1px solid var(--rule); padding-top: var(--space-md); }
+  .task h3 { display: flex; justify-content: space-between; gap: var(--space-md); margin-top: 0; max-width: 68ch; }
+  .task h3 .meta { font-family: Kalam, cursive; font-weight: 400; color: var(--pencil); font-size: 1rem; white-space: nowrap; }
+
+  details { margin-top: var(--space-md); }
+  summary { cursor: pointer; font-family: Besley, Georgia, serif; font-weight: 700; font-size: 1.05rem; color: var(--pen); }
+  .checklist { list-style: none; padding-left: 0; }
+  .checklist li::before { content: "☐ "; color: var(--pen); }
+  .spec {
+    margin-top: var(--space-md); background: var(--panel); border: 1px solid var(--rule);
+    padding: var(--space-md) var(--space-lg); font-size: 0.98rem; max-width: none;
+  }
+  .spec dt { font-weight: 700; font-family: Besley, Georgia, serif; margin-top: var(--space-sm); }
+  .spec dd { margin-left: 0; }
+  .spec ol { margin-top: var(--space-xs); padding-left: 1.4em; }
+  .spec .br { color: var(--pen); font-weight: 700; }
+
+  footer { margin-top: var(--space-2xl); border-top: 2px solid var(--ink); padding-top: var(--space-md); color: var(--ink-soft); font-size: 0.95rem; }
+
+  @media print {
+    body { background: white; font-size: 10.5pt; }
+    .sheet { max-width: none; padding: 0; }
+    .task, .grid-panel, table { break-inside: avoid; }
+    .timerbox { display: none; }
+    a { color: var(--ink); text-decoration: none; }
+    details { display: none; } /* print the question paper only */
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<header class="lesson-head">
+  <p class="breadcrumb">CS425 · Part A · Lesson 8 of 8</p>
+  <h1>Timed Mock — Full Part A</h1>
+  <p class="lesson-meta">40 minutes · paper only · print this page for exam conditions ·
+    <a href="../reference/part-a-cheatsheet.html">cheat sheet</a> (review before, not during) ·
+    <a href="0007-subsystem-design.html">← Lesson 7</a></p>
+  <hr class="headrule"><hr class="headrule">
+</header>
+
+<div class="mission-note">
+  <p><strong>Rules.</strong> Fresh scenario, closed book, pen and paper. Do the tasks in
+  order — each feeds the next, exactly like Lessons 1–7. Keep the last 4 minutes for the
+  consistency sweep. Open the model answers only when the timer ends.</p>
+</div>
+
+<div class="timerbox">
+  <span id="clock">40:00</span>
+  <button id="startbtn">Start the exam</button>
+  <span class="note">The clock turns red at zero. No sound, no popup — just like the real room.</span>
+</div>
+
+<h2>The scenario</h2>
+<div class="mission-note">
+  <p><strong>MediBook — Clinic Appointment System.</strong> Patients book appointments
+  at a clinic through an online portal. The system always verifies that the patient is
+  registered before any booking. The patient picks a doctor and a time slot; the system
+  checks that the slot is free, records the appointment, and sends a confirmation
+  through an external SMS gateway. When the requested slot is taken, the patient can
+  join the cancellation list for that slot instead. A receptionist can cancel any
+  appointment. Clinic policy: only registered patients can book (BR-1); a slot holds
+  exactly one appointment (BR-2); booking closes 2 hours before the slot starts (BR-3).</p>
+</div>
+
+<section class="task">
+  <h3>(a) Use-case diagram <span class="meta">5 min · 6 marks</span></h3>
+  <p>Draw the complete use-case diagram: actors, boundary, associations, «include»,
+  «extend» with its condition.</p>
+  <details class="ma">
+    <summary>Model answer (a)</summary>
+    <div class="grid-panel">
+<pre class="mermaid">
+flowchart LR
+  P(["🧍 Patient"]):::actor
+  RC(["🧍 Receptionist"]):::actor
+  subgraph SYS["Clinic Appointment System"]
+    B(["Book Appointment"])
+    V(["Verify Registration"])
+    J(["Join Cancellation List"])
+    X(["Cancel Appointment"])
+    B -. "«include»" .-> V
+    J -. "«extend» {slot is taken}" .-> B
+  end
+  G(["🖥 SMS Gateway"]):::actor
+  P --- B
+  RC --- X
+  B --- G
+  classDef actor fill:none;
+</pre>
+    </div>
+    <ul class="checklist">
+      <li>1 · Three actors outside the boundary, SMS Gateway included.</li>
+      <li>1 · Four ovals, verb + noun names.</li>
+      <li>1 · Associations: Patient–Book, Receptionist–Cancel, Book–SMS Gateway.</li>
+      <li>1 · «include» from Book Appointment → Verify Registration ("always").</li>
+      <li>1 · «extend» from Join Cancellation List → Book Appointment.</li>
+      <li>1 · Condition {slot is taken} written at the extend.</li>
+    </ul>
+  </details>
+</section>
+
+<section class="task">
+  <h3>(b) Use-case specification — Book Appointment <span class="meta">7 min · 7 marks</span></h3>
+  <p>Write the full specification: name, goal, primary actor, preconditions, trigger,
+  main flow, alternative flows, exceptional flows, postconditions, business rules.</p>
+  <details class="ma">
+    <summary>Model answer (b)</summary>
+    <dl class="spec">
+      <dt>Name</dt><dd>Book Appointment</dd>
+      <dt>Goal</dt><dd>The patient holds a confirmed appointment in a free slot.</dd>
+      <dt>Primary actor</dt><dd>Patient</dd>
+      <dt>Preconditions</dt><dd>The patient is signed in to the portal. The doctors' schedules are published.</dd>
+      <dt>Trigger</dt><dd>The patient submits a booking request for a chosen doctor and slot.</dd>
+      <dt>Main flow</dt>
+      <dd><ol>
+        <li>The patient selects a doctor and a time slot.</li>
+        <li>The system verifies the patient's registration <span class="br">[BR-1]</span>.</li>
+        <li>The system checks that the slot is free <span class="br">[BR-2]</span>.</li>
+        <li>The system checks that the booking window is open <span class="br">[BR-3]</span>.</li>
+        <li>The system records the appointment.</li>
+        <li>The system sends a confirmation through the SMS gateway.</li>
+        <li>The system shows the confirmation to the patient.</li>
+      </ol></dd>
+      <dt>Alternative flows</dt>
+      <dd>3a. The slot is taken. → 3a1. The system offers the cancellation list.
+      3a2. The patient accepts; the system records the entry. The use case ends.</dd>
+      <dt>Exceptional flows</dt>
+      <dd>2a. The patient is not registered. → 2a1. The system rejects the request and
+      shows the reason <span class="br">[BR-1]</span>. The use case ends.<br>
+      4a. The booking window is closed. → 4a1. The system rejects the request and shows
+      the cutoff time <span class="br">[BR-3]</span>. The use case ends.</dd>
+      <dt>Postconditions</dt><dd>Success: an appointment exists and an SMS was sent.
+      Alternative: the patient is on the cancellation list. Failure: nothing is recorded
+      and the patient saw the reason.</dd>
+      <dt>Business rules</dt><dd><span class="br">BR-1</span> only registered patients book ·
+      <span class="br">BR-2</span> one appointment per slot ·
+      <span class="br">BR-3</span> booking closes 2 hours before the slot.</dd>
+    </dl>
+    <ul class="checklist">
+      <li>1 · All sections present; name matches the oval.</li>
+      <li>1 · Preconditions are states; the trigger is the event. "Registered" is NOT a precondition — the flow checks it.</li>
+      <li>2 · Clean happy path, no "if" inside; every branch is a lettered flow at its step.</li>
+      <li>1 · Slot-taken filed as alternative (acceptable end); the two rejections as exceptional.</li>
+      <li>1 · Postconditions cover all three endings.</li>
+      <li>1 · Three business rules named and cited in the steps that check them.</li>
+    </ul>
+  </details>
+</section>
+
+<section class="task">
+  <h3>(c) Analysis classes <span class="meta">4 min · 5 marks</span></h3>
+  <p>List the participating classes with stereotypes and one-line responsibilities, and
+  draw the realization structure.</p>
+  <details class="ma">
+    <summary>Model answer (c)</summary>
+    <table>
+      <tr><th>Class</th><th>Stereotype</th><th>Responsibility</th></tr>
+      <tr><td>BookingForm</td><td>«boundary»</td><td>Face the patient: capture the request, show results.</td></tr>
+      <tr><td>SmsGateway</td><td>«boundary»</td><td>Face the external SMS actor: send the confirmation out.</td></tr>
+      <tr><td>BookingController</td><td>«control»</td><td>Run the booking flow and decide the branches [BR-1..3].</td></tr>
+      <tr><td>Patient</td><td>«entity»</td><td>Registration status and identity.</td></tr>
+      <tr><td>Slot</td><td>«entity»</td><td>Start time, free/taken state, cancellation list.</td></tr>
+      <tr><td>Appointment</td><td>«entity»</td><td>The booked record.</td></tr>
+    </table>
+    <ul class="checklist">
+      <li>1 · A boundary per actor–use-case pair — the SMS gateway gets one too.</li>
+      <li>1 · Exactly one control, named after the use case.</li>
+      <li>1 · Entities are domain nouns; no Portal or Screen entity.</li>
+      <li>1 · Each class has a stated responsibility.</li>
+      <li>1 · Structure: boundaries link to the control; the control links to the entities.</li>
+    </ul>
+  </details>
+</section>
+
+<section class="task">
+  <h3>(d) Sequence diagram — main flow <span class="meta">9 min · 9 marks</span></h3>
+  <p>Draw the main flow with the BR-1 branch in an alt frame and BR-2/BR-3 as checks in
+  the right places. Include a DAO for loading the patient.</p>
+  <details class="ma">
+    <summary>Model answer (d)</summary>
+    <div class="grid-panel">
+<pre class="mermaid">
+sequenceDiagram
+  actor P as Patient
+  participant U as «boundary» :BookingForm
+  participant C as «control» :BookingController
+  participant R as «DAO» :PatientRepository
+  participant PA as «entity» :Patient
+  participant S as «entity» :Slot
+  participant A as «entity» :Appointment
+  participant G as «boundary» :SmsGateway
+  P->>+U: requestBooking(doctorId, slotId)
+  U->>+C: book(patientId, doctorId, slotId)
+  C->>+R: findPatient(patientId)
+  R-->>-C: patient
+  C->>+PA: isRegistered()
+  PA-->>-C: yes / no  [BR-1]
+  alt registered
+    C->>+S: isFree()
+    S-->>-C: free  [BR-2]
+    C->>+S: isWithinBookingWindow()
+    S-->>-C: open  [BR-3]
+    C->>+A: create(patient, slot)
+    A-->>-C: appointment
+    C->>G: sendConfirmation(appointment)
+    C-->>U: confirmation
+  else not registered
+    C-->>U: rejection: not registered
+  end
+  deactivate C
+  U-->>-P: show result
+</pre>
+    </div>
+    <ul class="checklist">
+      <li>1 · Participant order: actor · boundary · control · DAO · entities · out-boundary.</li>
+      <li>1 · Objects named with colons.</li>
+      <li>2 · Activation bars opened and closed; dashed returns everywhere, back to the actor.</li>
+      <li>1 · BookingForm sends exactly one business message.</li>
+      <li>2 · BR-1 answered by Patient, BR-2 and BR-3 by Slot — the data owners.</li>
+      <li>1 · BR-1 branch in an alt frame with a rejection return.</li>
+      <li>1 · Every message maps to a step of (b); no inventions.</li>
+    </ul>
+  </details>
+</section>
+
+<section class="task">
+  <h3>(e) Collaboration diagram <span class="meta">5 min · 5 marks</span></h3>
+  <p>Convert your sequence diagram. Number with nesting; keep the guards.</p>
+  <details class="ma">
+    <summary>Model answer (e)</summary>
+    <div class="grid-panel">
+<pre class="mermaid">
+flowchart LR
+  P["🧍 Patient"]:::actor
+  U[":BookingForm"]
+  C[":BookingController"]
+  R[":PatientRepository"]
+  PA[":Patient"]
+  S[":Slot"]
+  A[":Appointment"]
+  G[":SmsGateway"]
+  P ---|"1: requestBooking(doctorId, slotId)"| U
+  U ---|"1.1: book(patientId, doctorId, slotId)"| C
+  C ---|"1.1.1: findPatient(patientId)"| R
+  C ---|"1.1.2: isRegistered() [BR-1]"| PA
+  C ---|"1.1.3 [registered]: isFree() [BR-2]"| S
+  C ---|"1.1.4 [registered]: isWithinBookingWindow() [BR-3]"| S
+  C ---|"1.1.5 [checks pass]: create(patient, slot)"| A
+  C ---|"1.1.6 [checks pass]: sendConfirmation(appointment)"| G
+  classDef actor fill:none;
+</pre>
+    </div>
+    <ul class="checklist">
+      <li>1 · Boxes and links only; no lifelines.</li>
+      <li>2 · Nesting correct: 1 → 1.1 → 1.1.1…1.1.6 in send order.</li>
+      <li>1 · Guards preserved on the conditional messages.</li>
+      <li>1 · Identical story to (d): same messages, same receivers.</li>
+    </ul>
+  </details>
+</section>
+
+<section class="task">
+  <h3>(f) VOPC diagram <span class="meta">6 min · 5 marks</span></h3>
+  <p>Draw the View of Participating Classes: stereotypes, key attributes, operations
+  derived from your messages, dependencies, and entity associations with
+  multiplicities.</p>
+  <details class="ma">
+    <summary>Model answer (f)</summary>
+    <div class="grid-panel">
+<pre class="mermaid">
+classDiagram
+  class BookingForm["«boundary» BookingForm"]
+  BookingForm : +requestBooking(doctorId, slotId)
+  class SmsGateway["«boundary» SmsGateway"]
+  SmsGateway : +sendConfirmation(appointment)
+  class BookingController["«control» BookingController"]
+  BookingController : +book(patientId, doctorId, slotId)
+  class PatientRepository["«DAO» PatientRepository"]
+  PatientRepository : +findPatient(patientId) Patient
+  class Patient["«entity» Patient"]
+  Patient : -patientId
+  Patient : -registered
+  Patient : +isRegistered() bool
+  class Slot["«entity» Slot"]
+  Slot : -startTime
+  Slot : -status
+  Slot : +isFree() bool
+  Slot : +isWithinBookingWindow() bool
+  Slot : +addToCancellationList(patient)
+  class Appointment["«entity» Appointment"]
+  Appointment : -status
+  Appointment : +create(patient, slot)
+  BookingForm ..> BookingController : uses
+  BookingController ..> PatientRepository : uses
+  BookingController ..> Patient : uses
+  BookingController ..> Slot : uses
+  BookingController ..> Appointment : creates
+  BookingController ..> SmsGateway : uses
+  Patient "1" -- "0..*" Appointment
+  Slot "1" -- "0..1" Appointment
+</pre>
+    </div>
+    <ul class="checklist">
+      <li>2 · Every message from (d)/(e) is an operation on its receiver; addToCancellationList from flow 3a included; no orphans.</li>
+      <li>1 · Attributes justify the checks (registered, startTime, status).</li>
+      <li>1 · Dashed «uses»/«creates» for traffic; no boundary–entity link.</li>
+      <li>1 · Multiplicities — note Slot "1" — "0..1" Appointment encodes BR-2.</li>
+    </ul>
+  </details>
+</section>
+
+<section class="task">
+  <h3>(g) Subsystem question <span class="meta">4 min · 3 marks</span></h3>
+  <p>The clinic wraps booking into a Scheduling subsystem. Give its interface with
+  operations, and explain information hiding and dependency reduction — one sentence
+  and one consequence each.</p>
+  <details class="ma">
+    <summary>Model answer (g)</summary>
+    <p><strong>ISchedulingService:</strong> +bookAppointment(patientId, doctorId,
+    slotId) · +cancelAppointment(appointmentId) · +joinCancellationList(patientId,
+    slotId). One operation per use case — not CRUD.</p>
+    <p><strong>Information hiding:</strong> the portal depends only on
+    ISchedulingService, so the controller, repositories, and storage can change without
+    any change to the portal. <strong>Dependency reduction:</strong> every client
+    depends on one interface instead of six internal classes, and all arrows point one
+    way — UI → interface → service → repositories.</p>
+    <ul class="checklist">
+      <li>1 · Interface operations mirror the use cases.</li>
+      <li>2 · Both principles stated with their consequences.</li>
+    </ul>
+  </details>
+</section>
+
+<h2>Score and next step</h2>
+<p>Total: 40 marks. Grade honestly against the checklists, then run the four-question
+consistency sweep from Lesson 6 across your (a)–(f).</p>
+<table>
+  <tr><th>Score</th><th>Verdict</th><th>Do this</th></tr>
+  <tr><td>32–40</td><td>Exam-ready</td><td>Rest, then reread the cheat sheet the morning of the exam.</td></tr>
+  <tr><td>24–31</td><td>Close</td><td>Redo the two weakest tasks' lessons, then retake this mock with a fresh eye tomorrow.</td></tr>
+  <tr><td>&lt; 24</td><td>Not yet</td><td>Rework Lessons 4–6 fully — the interaction diagrams carry the most marks — then return here.</td></tr>
+</table>
+
+<div class="warn">
+  <h3>The last five minutes, every time</h3>
+  <p>Whatever the question, spend the final minutes on the sweep: every spec step has a
+  message, both interaction diagrams tell one story, every message is an operation,
+  every operation traces to a message. It is the cheapest 10% of marks on the paper.</p>
+</div>
+
+<footer>
+  <p>Report your score to your teacher in the Claude Code session — the next study
+  session is planned from it. Have a past paper? Share it; it beats any invented mock.</p>
+  <p>Course map: <a href="../index.html">all lessons</a> ·
+  <a href="../reference/part-a-cheatsheet.html">Part A cheat sheet</a>.</p>
+</footer>
+
+</div>
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({
+    startOnLoad: true,
+    look: "handDrawn",
+    theme: "neutral",
+    themeVariables: {
+      fontFamily: "Kalam, cursive",
+      background: "transparent",
+      primaryColor: "#faf7ef",
+      primaryBorderColor: "#3a3630",
+      primaryTextColor: "#3a3630",
+      lineColor: "#3a4a7a",
+      clusterBkg: "transparent",
+      clusterBorder: "#3a3630"
+    }
+  });
+
+  document.querySelectorAll("details.ma").forEach(d => {
+    d.addEventListener("toggle", () => {
+      if (d.open) mermaid.run({ querySelector: "details.ma[open] .mermaid:not([data-processed])" });
+    });
+  });
+
+  const clock = document.getElementById("clock");
+  const btn = document.getElementById("startbtn");
+  const box = document.querySelector(".timerbox");
+  let remaining = 40 * 60, ticking = null;
+  btn.addEventListener("click", () => {
+    if (ticking) { clearInterval(ticking); ticking = null; btn.textContent = "Resume"; return; }
+    btn.textContent = "Pause";
+    ticking = setInterval(() => {
+      remaining--;
+      const m = String(Math.floor(Math.max(remaining, 0) / 60)).padStart(2, "0");
+      const s = String(Math.max(remaining, 0) % 60).padStart(2, "0");
+      clock.textContent = m + ":" + s;
+      if (remaining <= 0) { clearInterval(ticking); ticking = null; box.classList.add("done"); btn.textContent = "Time is up — grade now"; }
+    }, 1000);
+  });
+</script>
+</body>
+</html>

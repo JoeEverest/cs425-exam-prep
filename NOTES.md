@@ -12,7 +12,9 @@
 3. 0003 — Use-case realization: boundary / control / entity classes ✅ built
 4. 0004 — Sequence diagrams (lifelines, activations, DAO/repository, alt/opt) ✅ built
 5. 0005 — Collaboration diagrams (links, numbered messages, nesting) ✅ built
-6. 0006 — VOPC diagrams (deriving operations from messages)
+6. 0006 — VOPC diagrams (deriving operations from messages) ✅ built
+   (cheat sheet updated in the same commit: BR-1 check moved from a controller
+   self-message to Course.checkPrerequisites, so all artifacts tell one story)
 7. 0007 — Subsystem design (façade, service, DAO, repository)
 8. Final — full mock question under a 40-minute timer; the consistency check
 

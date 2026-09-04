@@ -185,12 +185,14 @@ sequenceDiagram
   participant F as «boundary» :EnrollmentForm
   participant C as «control» :EnrollmentController
   participant R as «DAO» :CourseRepository
+  participant K as «entity» :Course
   participant E as «entity» :Enrollment
   S->>+F: submitEnrollment(courseId)
   F->>+C: enroll(studentId, courseId)
   C->>+R: findCourse(courseId)
   R-->>-C: course
-  C->>C: verifyPrerequisites(student, course) [BR-1]
+  C->>+K: checkPrerequisites(student)
+  K-->>-C: met / not met  [BR-1]
   alt prerequisites met
     C->>+E: create(student, course)
     E-->>-C: enrollment
@@ -224,11 +226,12 @@ flowchart LR
   F[":EnrollmentForm"]
   C[":EnrollmentController"]
   R[":CourseRepository"]
+  K[":Course"]
   E[":Enrollment"]
   S ---|"1: submitEnrollment(courseId)"| F
   F ---|"1.1: enroll(studentId, courseId)"| C
   C ---|"1.1.1: findCourse(courseId)"| R
-  C ---|"1.1.2: verifyPrerequisites() [BR-1]"| C
+  C ---|"1.1.2: checkPrerequisites(student) [BR-1]"| K
   C ---|"1.1.3 [prereqs met]: create(student, course)"| E
   classDef actor fill:none;
 </pre>
@@ -253,21 +256,21 @@ classDiagram
   EnrollmentForm : +submitEnrollment(courseId)
   class EnrollmentController["«control» EnrollmentController"]
   EnrollmentController : +enroll(studentId, courseId)
-  EnrollmentController : -verifyPrerequisites(student, course)
   class CourseRepository["«DAO» CourseRepository"]
   CourseRepository : +findCourse(courseId) Course
   class Student["«entity» Student"]
   Student : -studentId
   Student : -completedCourses
   class Course["«entity» Course"]
-  Course : -courseId
   Course : -capacity
   Course : -prerequisites
+  Course : +checkPrerequisites(student) bool
   class Enrollment["«entity» Enrollment"]
   Enrollment : -status
   Enrollment : +create(student, course)
   EnrollmentForm ..> EnrollmentController : uses
   EnrollmentController ..> CourseRepository : uses
+  EnrollmentController ..> Course : uses
   EnrollmentController ..> Enrollment : creates
   Student "1" -- "0..*" Enrollment
   Course "1" -- "0..*" Enrollment

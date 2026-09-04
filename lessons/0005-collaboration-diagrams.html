@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 5 · Draw a Collaboration Diagram</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@600;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: oklch(96.5% 0.013 92);
+    --panel: oklch(98.4% 0.008 95);
+    --ink: oklch(28% 0.02 75);
+    --ink-soft: oklch(45% 0.02 75);
+    --pen: oklch(43% 0.11 262);
+    --pen-soft: oklch(43% 0.11 262 / 0.12);
+    --pencil: oklch(60% 0.015 75);
+    --red: oklch(49% 0.16 27);
+    --red-soft: oklch(49% 0.16 27 / 0.08);
+    --ok: oklch(50% 0.1 150);
+    --ok-soft: oklch(50% 0.1 150 / 0.1);
+    --rule: oklch(88% 0.018 250);
+    --space-xs: 4px; --space-sm: 8px; --space-md: 16px;
+    --space-lg: 32px; --space-xl: 56px; --space-2xl: 96px;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Atkinson Hyperlegible", Verdana, sans-serif;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+  }
+  .sheet { max-width: 880px; margin: 0 auto; padding: var(--space-lg) var(--space-md) var(--space-2xl); }
+  h1, h2, h3 { font-family: Besley, Georgia, serif; line-height: 1.15; }
+  h1 { font-size: clamp(2rem, 5vw, 2.9rem); font-weight: 800; }
+  h2 { font-size: 1.55rem; font-weight: 700; margin-top: var(--space-xl); }
+  h3 { font-size: 1.15rem; font-weight: 700; margin-top: var(--space-lg); }
+  p, ul, ol { margin-top: var(--space-md); max-width: 68ch; }
+  li + li { margin-top: var(--space-xs); }
+  a { color: var(--pen); }
+  code { font-family: inherit; font-weight: 700; }
+  .hand { font-family: Kalam, "Comic Sans MS", cursive; color: var(--pen); }
+
+  header.lesson-head { padding-top: var(--space-md); }
+  .breadcrumb { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+  .lesson-meta { margin-top: var(--space-sm); color: var(--ink-soft); font-size: 0.95rem; }
+  .headrule { border: 0; border-top: 2px solid var(--ink); margin-top: var(--space-md); }
+  .headrule + .headrule { border-top-width: 1px; margin-top: 3px; }
+
+  .mission-note { margin-top: var(--space-lg); background: var(--pen-soft); padding: var(--space-md) var(--space-lg); max-width: none; }
+  .mission-note p { margin-top: var(--space-xs); }
+
+  .grid-panel {
+    margin-top: var(--space-md);
+    background:
+      repeating-linear-gradient(to right, var(--rule) 0 1px, transparent 1px 24px),
+      repeating-linear-gradient(to bottom, var(--rule) 0 1px, transparent 1px 24px),
+      var(--panel);
+    border: 1px solid var(--rule);
+    padding: var(--space-md);
+    overflow-x: auto;
+  }
+  .grid-panel .mermaid { display: flex; justify-content: center; }
+
+  .step { display: grid; grid-template-columns: 72px 1fr; gap: 0 var(--space-md); margin-top: var(--space-xl); }
+  .step-num { font-family: Besley, Georgia, serif; font-weight: 800; font-size: 3rem; color: var(--pencil); line-height: 1; }
+  .step h3 { margin-top: 0; }
+  .step .grid-panel, .step p, .step ul, .step table { grid-column: 2; }
+  .step > p { margin-top: var(--space-sm); }
+  .margin-note { font-family: Kalam, cursive; color: var(--pen); font-size: 1rem; margin-top: var(--space-sm); }
+
+  table { border-collapse: collapse; margin-top: var(--space-md); width: 100%; }
+  th, td { border: 1px solid var(--rule); padding: var(--space-sm) var(--space-md); text-align: left; vertical-align: top; }
+  th { font-family: Besley, Georgia, serif; font-size: 0.95rem; background: var(--panel); }
+
+  .warn { margin-top: var(--space-lg); background: var(--red-soft); padding: var(--space-md) var(--space-lg); max-width: none; }
+  .warn h3 { color: var(--red); margin-top: 0; }
+  .warn strong { color: var(--red); }
+
+  .quiz-q { margin-top: var(--space-lg); }
+  .quiz-q p.q { font-weight: 700; }
+  .quiz-opts { display: flex; flex-direction: column; gap: var(--space-sm); margin-top: var(--space-sm); max-width: 60ch; }
+  .quiz-opts button {
+    font: inherit; text-align: left; cursor: pointer;
+    background: var(--panel); color: var(--ink);
+    border: 1px solid var(--pencil); padding: var(--space-sm) var(--space-md);
+  }
+  .quiz-opts button:hover { border-color: var(--pen); }
+  .quiz-opts button.correct { background: var(--ok-soft); border-color: var(--ok); }
+  .quiz-opts button.wrong { background: var(--red-soft); border-color: var(--red); }
+  .quiz-why { display: none; margin-top: var(--space-sm); font-size: 0.98rem; color: var(--ink-soft); max-width: 60ch; }
+  .quiz-q.answered .quiz-why { display: block; }
+
+  details { margin-top: var(--space-lg); }
+  summary { cursor: pointer; font-family: Besley, Georgia, serif; font-weight: 700; font-size: 1.1rem; color: var(--pen); }
+  .checklist { list-style: none; padding-left: 0; }
+  .checklist li::before { content: "☐ "; color: var(--pen); }
+
+  footer { margin-top: var(--space-2xl); border-top: 2px solid var(--ink); padding-top: var(--space-md); color: var(--ink-soft); font-size: 0.95rem; }
+
+  @media print {
+    body { background: white; font-size: 10.5pt; }
+    .sheet { max-width: none; padding: 0; }
+    .step, .grid-panel, .quiz-q, table { break-inside: avoid; }
+    a { color: var(--ink); text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<header class="lesson-head">
+  <p class="breadcrumb">CS425 · Part A · Lesson 5 of 8</p>
+  <h1>Draw a Collaboration Diagram</h1>
+  <p class="lesson-meta">≈ 20 minutes · pen and paper required at the end ·
+    <a href="../reference/part-a-cheatsheet.html">cheat sheet</a> ·
+    <a href="0004-sequence-diagrams.html">← Lesson 4</a></p>
+  <hr class="headrule"><hr class="headrule">
+</header>
+
+<div class="mission-note">
+  <p><strong>Why this lesson.</strong> This is a conversion skill. You already own the
+  story — the Lesson 4 sequence diagram. Here you re-project it: links instead of
+  lifelines, numbers instead of vertical order. Exams often hand you one diagram and ask
+  for the other.</p>
+</div>
+
+<h2>What the exam asks</h2>
+<ul>
+  <li>Explain the emphasis: a collaboration diagram shows <strong>object links and message
+      exchanges</strong>; a sequence diagram shows <strong>time order</strong>.</li>
+  <li>Show the participating object instances and the structural links between them.</li>
+  <li>Number the messages to show order, nesting, and control flow.</li>
+  <li>Assign each message to the responsible boundary, control, or entity object.</li>
+  <li>Tell the same story as the use-case flow and the sequence diagram, with the validation and alternatives.</li>
+</ul>
+
+<h2>Two projections of one story</h2>
+<table>
+  <tr><th></th><th>Sequence diagram</th><th>Collaboration diagram</th></tr>
+  <tr><td><strong>Emphasizes</strong></td><td>Time order — the vertical axis is time.</td><td>Structure — who is linked to whom.</td></tr>
+  <tr><td><strong>Order shown by</strong></td><td>Position down the page.</td><td>The message numbers.</td></tr>
+  <tr><td><strong>Strong at</strong></td><td>Reading a flow start to finish; branches with alt frames.</td><td>Seeing coupling: which objects must know each other.</td></tr>
+  <tr><td><strong>Returns</strong></td><td>Dashed arrows, always drawn.</td><td>Usually omitted; the number sequence implies them.</td></tr>
+  <tr><td><strong>Same in both</strong></td><td colspan="2">The objects, the messages, the receivers, the guards — the story.</td></tr>
+</table>
+<p class="margin-note">Exam phrasing to memorize: "a collaboration diagram emphasizes
+object links and message exchanges; a sequence diagram emphasizes time order."</p>
+
+<h2>The numbering system</h2>
+<p>The numbers carry everything the vertical axis carried before. Three rules:</p>
+<ol>
+  <li><strong>Top level:</strong> each message from the actor starts a new whole number: 1, 2, 3.</li>
+  <li><strong>Nesting:</strong> while an object handles message <code>n</code>, every
+      message it sends gets <code>n.1</code>, <code>n.2</code>, <code>n.3</code> — in
+      order. Deeper delegation adds another dot: <code>1.1.2</code>.</li>
+  <li><strong>Control flow:</strong> guards ride in front of the label:
+      <code>1.1.4 [prereqs met]: create(...)</code>. A repeated message takes a star:
+      <code>2.1 *[for each book]: borrow(bookId)</code>.</li>
+</ol>
+<p>Read <code>1.1.2</code> aloud: "the second message sent while handling 1.1." If you
+can say that sentence for every number you wrote, your numbering is right.</p>
+
+<h2>Convert Lesson 4's diagram in four moves</h2>
+
+<section class="step">
+  <div class="step-num">1</div>
+  <div>
+    <h3>Copy the participants as boxes</h3>
+    <p>Same objects, same names with colons. No lifelines. Place the actor at the left
+    and arrange the boxes so the links will not cross — the control usually sits in the
+    middle, entities around it.</p>
+  </div>
+  <div class="grid-panel">
+<pre class="mermaid">
+flowchart LR
+  S["🧍 Student"]:::actor
+  F[":EnrollmentForm"]
+  C[":EnrollmentController"]
+  R[":CourseRepository"]
+  K[":Course"]
+  E[":Enrollment"]
+  S ~~~ F
+  F ~~~ C
+  C ~~~ R
+  C ~~~ K
+  C ~~~ E
+  classDef actor fill:none;
+</pre>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-num">2</div>
+  <div>
+    <h3>Draw the links</h3>
+    <p>One solid line for every pair that exchanges at least one message in the sequence
+    diagram: actor–form, form–controller, controller–repository, controller–course,
+    controller–enrollment. These lines are structure — they say "these objects know each
+    other."</p>
+  </div>
+  <div class="grid-panel">
+<pre class="mermaid">
+flowchart LR
+  S["🧍 Student"]:::actor
+  F[":EnrollmentForm"]
+  C[":EnrollmentController"]
+  R[":CourseRepository"]
+  K[":Course"]
+  E[":Enrollment"]
+  S --- F
+  F --- C
+  C --- R
+  C --- K
+  C --- E
+  classDef actor fill:none;
+</pre>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-num">3</div>
+  <div>
+    <h3>Walk the sequence diagram, label the links</h3>
+    <p>Go down the Lesson 4 diagram message by message. Write each label along its link
+    with a small arrow for the direction. Do not invent and do not skip — this is a
+    transcription.</p>
+    <p class="margin-note">Returns stay home: the confirmation and the rejection are
+    return traffic, so they get no numbered message here.</p>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-num">4</div>
+  <div>
+    <h3>Number, then add the guards</h3>
+    <p>The actor's message is 1. The form sends 1.1. The controller, handling 1.1, sends
+    1.1.1 through 1.1.4 in order. The branch outcomes of BR-1 become guards on 1.1.3 and
+    1.1.4. Done — the complete diagram:</p>
+  </div>
+  <div class="grid-panel">
+<pre class="mermaid">
+flowchart LR
+  S["🧍 Student"]:::actor
+  F[":EnrollmentForm"]
+  C[":EnrollmentController"]
+  R[":CourseRepository"]
+  K[":Course"]
+  E[":Enrollment"]
+  S ---|"1: submitEnrollment(courseId)"| F
+  F ---|"1.1: enroll(studentId, courseId)"| C
+  C ---|"1.1.1: findCourse(courseId)"| R
+  C ---|"1.1.2: checkPrerequisites(student) [BR-1]"| K
+  C ---|"1.1.3 [prereqs met]: hasFreeSeat() [BR-2]"| K
+  C ---|"1.1.4 [prereqs met, seats free]: create(student, course)"| E
+  classDef actor fill:none;
+</pre>
+  </div>
+  <p>Two messages ride the controller–course link (1.1.2 and 1.1.3) — one link, two
+  labels. That is normal; links are structure, messages are traffic.</p>
+</section>
+
+<h2>Check it against the story</h2>
+<table>
+  <tr><th>Sequence diagram (Lesson 4)</th><th>Here</th></tr>
+  <tr><td>submitEnrollment — first, from the actor</td><td>Number 1, on the actor–form link</td></tr>
+  <tr><td>enroll — sent by the form while handling it</td><td>1.1</td></tr>
+  <tr><td>findCourse, checkPrerequisites, hasFreeSeat, create — sent by the controller, in order</td><td>1.1.1 … 1.1.4</td></tr>
+  <tr><td>alt frame on BR-1</td><td>Guards [prereqs met] on 1.1.3 and 1.1.4</td></tr>
+  <tr><td>Returns and confirmations</td><td>Omitted; implied</td></tr>
+</table>
+<p>Same objects, same receivers, same guards, same order. If a grader reads both
+diagrams and hears two different stories, marks disappear in <em>both</em> questions.</p>
+
+<div class="warn">
+  <h3>Red-pen list: how students lose marks here</h3>
+  <ul>
+    <li><strong>Flat numbering.</strong> 1, 2, 3, 4, 5 across the whole diagram throws away nesting — the control flow the question asks for.</li>
+    <li><strong>Numbering jumps a level.</strong> The controller handles 1.1, so it sends 1.1.1 — not 1.2. The prefix is the message being handled.</li>
+    <li><strong>Missing links.</strong> A message floating between two unlinked boxes. Draw the line first, the label second.</li>
+    <li><strong>Story drift.</strong> A message here that the sequence diagram does not have, or the reverse. It is a transcription, not a remix.</li>
+    <li><strong>Guards dropped.</strong> The BR-1 branch must stay visible — that is the "relevant validation" the guide demands.</li>
+    <li><strong>Actor omitted.</strong> Message 1 needs a sender. Keep the stick figure.</li>
+  </ul>
+</div>
+
+<h2>Quick check</h2>
+
+<div class="quiz-q">
+  <p class="q">1 · What does a collaboration diagram emphasize that a sequence diagram does not?</p>
+  <div class="quiz-opts">
+    <button data-ok="1">The structural links between objects — who must know whom</button>
+    <button>The time order of messages</button>
+    <button>The internal state of each object</button>
+  </div>
+  <p class="quiz-why">Links show structure and coupling. Time order moves into the message numbers. This exact explanation is an exam bullet.</p>
+</div>
+
+<div class="quiz-q">
+  <p class="q">2 · The controller, while handling message 1.1, sends its third message. Its number is:</p>
+  <div class="quiz-opts">
+    <button>1.3</button>
+    <button>3</button>
+    <button data-ok="1">1.1.3</button>
+  </div>
+  <p class="quiz-why">Prefix = the message being handled (1.1), suffix = the send order (3). "The third message sent while handling 1.1."</p>
+</div>
+
+<div class="quiz-q">
+  <p class="q">3 · How does the BR-1 branch from the sequence diagram's alt frame appear here?</p>
+  <div class="quiz-opts">
+    <button>It cannot be shown; collaboration diagrams have no branches</button>
+    <button data-ok="1">As guards in front of the affected messages: [prereqs met]</button>
+    <button>As a second, separate collaboration diagram only</button>
+  </div>
+  <p class="quiz-why">Guards carry the condition. (A complex alternative flow can still get its own diagram — same rule as Lesson 4.)</p>
+</div>
+
+<div class="quiz-q">
+  <p class="q">4 · The member scans a second item, and the actor's message repeats for each book. Best notation?</p>
+  <div class="quiz-opts">
+    <button data-ok="1">An iteration star: 2 *[for each book]: scanBook(bookId)</button>
+    <button>Copy the whole message chain once per book</button>
+    <button>A new diagram per book</button>
+  </div>
+  <p class="quiz-why">The star marks iteration; the bracket says over what. One line replaces any number of repeats.</p>
+</div>
+
+<div class="quiz-q">
+  <p class="q">5 · Two messages travel between the controller and the Course object. How many links do you draw?</p>
+  <div class="quiz-opts">
+    <button>Two — one per message</button>
+    <button data-ok="1">One — links are structure; both labels ride the same line</button>
+    <button>Zero — entities have no links</button>
+  </div>
+  <p class="quiz-why">A link says "these objects know each other" — once. Messages are traffic on that link.</p>
+</div>
+
+<h2>Now draw on paper</h2>
+<p>Set a 6-minute timer. Convert your <strong>Borrow Book</strong> sequence diagram
+(Lesson 4) into a collaboration diagram. Watch for the second actor message — the book
+scan starts number 2. Then compare.</p>
+
+<details id="model-answer">
+  <summary>Open the model answer</summary>
+  <div class="grid-panel">
+<pre class="mermaid">
+flowchart LR
+  M["🧍 Member"]:::actor
+  U[":KioskUI"]
+  C[":LoanController"]
+  R[":MemberRepository"]
+  B[":Member"]
+  L[":Loan"]
+  M ---|"1: scanCard(cardId)"| U
+  U ---|"1.1: startBorrow(cardId)"| C
+  C ---|"1.1.1: findMember(cardId)"| R
+  C ---|"1.1.2: isValid() [BR-1]"| B
+  M ---|"2 *[for each book]: scanBook(bookId)"| U
+  U ---|"2.1: borrow(bookId)"| C
+  C ---|"2.1.1: canTakeAnotherLoan() [BR-2]"| B
+  C ---|"2.1.2 [limit not reached]: create(member, book)"| L
+  classDef actor fill:none;
+</pre>
+  </div>
+  <h3>Grade yourself</h3>
+  <ul class="checklist">
+    <li>Six boxes with colons, actor included; no lifelines, no activation bars.</li>
+    <li>A link for every communicating pair — and only for those.</li>
+    <li>The card scan is 1; the book scan starts 2 — a new actor message, a new whole number.</li>
+    <li>Nesting reads correctly: 2.1 sent by the kiosk, 2.1.1 and 2.1.2 sent by the controller.</li>
+    <li>BR-1 and BR-2 visible as guards; iteration star on the repeated scan.</li>
+    <li>Every message exists in your Lesson 4 diagram — no drift.</li>
+  </ul>
+  <p>Score 5–6: say "next" for Lesson 6. Score ≤ 4: renumber only — say each number
+  aloud as "the nth message sent while handling…" and fix what does not parse.</p>
+</details>
+
+<footer>
+  <p>Stuck? Ask your teacher in the Claude Code session — for example:
+  <span class="hand">"do returns ever get numbers in a collaboration diagram?"</span></p>
+  <p>Next: <strong>Lesson 6 — VOPC</strong>: collect these objects into one class
+  diagram, and derive every operation from the messages you just numbered.
+  Reference: <a href="../reference/part-a-cheatsheet.html">Part A cheat sheet</a>.</p>
+</footer>
+
+</div>
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({
+    startOnLoad: true,
+    look: "handDrawn",
+    theme: "neutral",
+    themeVariables: {
+      fontFamily: "Kalam, cursive",
+      background: "transparent",
+      primaryColor: "#faf7ef",
+      primaryBorderColor: "#3a3630",
+      primaryTextColor: "#3a3630",
+      lineColor: "#3a4a7a",
+      clusterBkg: "transparent",
+      clusterBorder: "#3a3630"
+    }
+  });
+
+  const details = document.getElementById("model-answer");
+  details.addEventListener("toggle", () => {
+    if (details.open) mermaid.run({ querySelector: "#model-answer .mermaid:not([data-processed])" });
+  });
+
+  document.querySelectorAll(".quiz-q").forEach(q => {
+    q.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (q.classList.contains("answered")) return;
+        q.classList.add("answered");
+        btn.classList.add(btn.dataset.ok ? "correct" : "wrong");
+        if (!btn.dataset.ok) q.querySelector("[data-ok]").classList.add("correct");
+      });
+    });
+  });
+</script>
+</body>
+</html>
